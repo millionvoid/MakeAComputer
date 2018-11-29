@@ -1,0 +1,98 @@
+#-----------------------------------------------------------
+# Vivado v2018.2 (64-bit)
+# SW Build 2258646 on Thu Jun 14 20:03:12 MDT 2018
+# IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+# Start of session at: Tue Oct 30 22:32:02 2018
+# Process ID: 5440
+# Current directory: E:/Xilinx_pro/ALU
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent9808 E:\Xilinx_pro\ALU\thinpad_top.xpr
+# Log file: E:/Xilinx_pro/ALU/vivado.log
+# Journal file: E:/Xilinx_pro/ALU\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/Xilinx_pro/ALU/thinpad_top.xpr
+close [ open E:/Xilinx_pro/ALU/thinpad_top.srcs/sources_1/new/Ctrl_SRAM_UART.v w ]
+add_files E:/Xilinx_pro/ALU/thinpad_top.srcs/sources_1/new/Ctrl_SRAM_UART.v
+synth_design -rtl -name rtl_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_runs impl_1 -jobs 2
+wait_on_run impl_1
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+open_hw
+close_hw
+close_design
+close [ open E:/Xilinx_pro/ALU/thinpad_top.srcs/sources_1/new/UART.v w ]
+add_files E:/Xilinx_pro/ALU/thinpad_top.srcs/sources_1/new/UART.v
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+launch_simulation -mode post-synthesis -type functional
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+close_sim
+close_design
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_runs impl_1 -jobs 2
+wait_on_run impl_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
