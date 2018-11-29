@@ -27,8 +27,8 @@ module Memory(
     input wire[31:0] SW,
     output wire[31:0] LEDOut,
     
-    input wire InstAddress,
-    output wire InstInput,
+    input wire[31:0] InstAddress,
+    output wire[31:0] InstInput,
     
     input wire MemReadEN,
     input wire MemWriteEN,
@@ -48,12 +48,20 @@ module Memory(
     output wire[19:0] ram_addr,
     output wire ram_CE,
     output wire ram_OE,
-    output wire ram_WE
+    output wire ram_WE,
+    output wire[3:0] ram_BE,
+
+    inout wire[31:0] ext_ram_data,
+    output wire[19:0] ext_ram_addr,
+    output wire ext_ram_CE,
+    output wire ext_ram_OE,
+    output wire ext_ram_WE,
+    output wire[3:0] ext_ram_BE
     );
 
 reg ctrl;
 wire succ;
-reg[1:0] mode;
+reg[2:0] mode;
 
 reg[31:0] in_data;
 wire[31:0] out_data;
@@ -63,7 +71,16 @@ wire uart_r_ok,uart_w_ok;
 
 reg[2:0] state;
 
-reg[31:0] BufferData1, BufferData2;
+reg[31:0] BufferData1;
+reg[31:0] BufferData2;
+assign InstInput=BufferData1;
+assign MemReadData=BufferData2;
+
+reg[3:0] BE;
+assign ram_BE=BE;
+assign ext_ram_BE=BE;
+
+assign CPUclk = (state == 0);
 
 always@(posedge clk or posedge rst) begin
     if (rst == 1) begin
@@ -80,7 +97,8 @@ always@(posedge clk or posedge rst) begin
             1:begin //rw_start
                 case (MemAddress)
                     32'hBFD003F8:begin
-                        mode <= {1'b0,MemReadEN};
+                        mode <= {2'b0,MemReadEN};
+                        in_data <= MemWriteData;
                         ctrl <= succ;
                         state <= 2;
                     end
@@ -89,7 +107,31 @@ always@(posedge clk or posedge rst) begin
                         state <= 3;
                     end
                     default:begin
-                        mode <= {1'b1,MemReadEN};
+                        mode <= {MemAddress[22],1'b1,MemReadEN};
+                        if (MemWriteSelect) begin
+                            case (MemAddress[1:0])
+                                0:begin
+                                    in_data <= {24'h0,MemWriteData[7:0]};
+                                    BE <= 4'b1110;
+                                end
+                                1:begin
+                                    in_data <= {16'h0,MemWriteData[7:0],8'h0};
+                                    BE <= 4'b1101;
+                                end
+                                2:begin
+                                    in_data <= {8'h0,MemWriteData[7:0],16'h0};
+                                    BE <= 4'b1011;
+                                end
+                                3:begin
+                                    in_data <= {MemWriteData[7:0],24'h0};
+                                    BE <= 4'b0111;
+                                end
+                            endcase
+                        end else begin
+                            in_data <= MemWriteData;
+                            BE <= 0;
+                        end
+                        in_addr <= MemAddress[21:2];
                         ctrl <= succ;
                         state <= 2;
                     end
@@ -97,14 +139,46 @@ always@(posedge clk or posedge rst) begin
             end
             2:begin //rw_wait
                 if (succ) begin
-                    BufferData2 <= out_data;
+                    if (MemReadSelect == 0) begin
+                        BufferData2 <= out_data;
+                    end else begin
+                        case (MemAddress[1:0])
+                            0:begin
+                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[7:0]) : MemWriteData[7:0];
+                            end
+                            1:begin
+                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[15:8]) : MemWriteData[15:8];
+                            end
+                            2:begin
+                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[23:16]) : MemWriteData[23:16];
+                            end
+                            3:begin
+                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[31:24]) : MemWriteData[31:24];
+                            end
+                        endcase
+                    end
+                    BE <= 0;
+                    state <= 3;
+                end else begin
+                    ctrl <= succ;
                 end
             end
             3:begin //ins_start
+                mode <= {InstAddress[22],2'b11};
+                in_addr <= InstAddress[21:2];
+                ctrl <= succ;
+                state <= 4;
             end
             4:begin //ins_wait
+                if (succ) begin
+                    BufferData1 <= out_data;
+                    state <= 0;
+                end else begin
+                    ctrl <= succ;
+                end
             end
             default:begin
+                state <= 0;
             end
         endcase
     end
@@ -122,6 +196,12 @@ Ctrl_SRAM_UART controller(
     .ram_CE(ram_CE),
     .ram_OE(ram_OE),
     .ram_WE(ram_WE),
+    
+    .ext_ram_data(ext_ram_data),
+    .ext_ram_addr(ext_ram_addr),
+    .ext_ram_CE(ext_ram_CE),
+    .ext_ram_OE(ext_ram_OE),
+    .ext_ram_WE(ext_ram_WE),
     
     .clk(clk),
     .rst(rst),

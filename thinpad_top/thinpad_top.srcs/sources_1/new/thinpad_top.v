@@ -80,80 +80,32 @@ module thinpad_top(
     output wire video_de           //行数据有效信号，用于区分消隐区
 );
 
-assign base_ram_be_n=0;
+wire CPUclk;
+wire[31:0] InstAddress;
+wire[31:0] InstInput;
+wire[31:0] MemAddress;
+wire[31:0] MemReadData;
+wire[31:0] MemWriteData;
+wire MemReadEN;
+wire MemWriteEN;
+wire MemReadSelect;
+wire MemWriteSelect;
 
-reg ctrl;
-reg continue;
-wire succ;
-wire uart_r_ok,uart_w_ok;
-reg[1:0] mode;
+CPU CPU_c(
+    .clk(CPUclk),
+    .rst(reset_btn),
+    .InstAddress(InstAddress),
+    .InstInput(InstInput),
+    .MemAddress(MemAddress),
+    .MemReadData(MemReadData),
+    .MemWriteData(MemWriteData),
+    .MemReadEN(MemReadEN),
+    .MemWriteEN(MemWriteEN),
+    .MemReadSelect(MemReadSelect),
+    .MemWriteSelect(MemWriteSelect)
+);
 
-assign dpy0[7]=succ;
-
-always@(succ or continue) begin
-    if (continue) begin
-        ctrl <= succ;
-    end
-end
-
-reg[31:0] in_data;
-wire[31:0] out_data;
-reg[31:0] in_addr;
-
-assign leds={out_data[31:8],in_addr[7:0]};
-
-reg[31:0] mid_reg;
-
-always@(posedge clk_50M or posedge reset_btn) begin
-    if (reset_btn) begin
-        in_addr <= 0;
-        mode <= 2'b00;
-        continue<=1;
-    end else begin
-        if (mode == 2'b01) begin  //read uart
-            if (succ) begin
-                mid_reg <= out_data;
-                mode<=2'b11;
-            end
-        end else if (mode == 2'b11) begin  //read sram
-            if (succ) begin
-                if (mid_reg[3:0] == 4'h0) begin
-                    in_data <= out_data;
-                end else begin
-                    in_data <= mid_reg;
-                    in_addr <= in_addr+1;
-                end
-                mode<=2'b10;
-            end
-        end else if (mode == 2'b10) begin  //write sram
-            if (succ&continue) begin
-                if (mid_reg[3:0] == 4'h0) begin
-                    in_addr <= in_addr-1;
-                end else begin
-                end
-            end
-            if (succ|(!continue)) begin
-                if (uart_w_ok) begin
-                    continue<=1;
-                    mode<=2'b00;
-                end else begin
-                    continue<=0;
-                end
-            end
-        end else if (mode == 2'b00) begin  //write uart
-            if (succ|(!continue)) begin
-                if (uart_r_ok) begin
-                    continue<=1;
-                    mode<=2'b01;
-                end else begin
-                    continue<=0;
-                end
-            end
-        end
-    end
-end
-
-Ctrl_SRAM_UART controller(
+Memory memory_c(
     .uart_rdn(uart_rdn),
     .uart_wrn(uart_wrn),
     .uart_dataready(uart_dataready),
@@ -165,17 +117,29 @@ Ctrl_SRAM_UART controller(
     .ram_CE(base_ram_ce_n),
     .ram_OE(base_ram_oe_n),
     .ram_WE(base_ram_we_n),
+    .ram_BE(base_ram_be_n),
+    
+    .ext_ram_data(ext_ram_data),
+    .ext_ram_addr(ext_ram_addr),
+    .ext_ram_CE(ext_ram_ce_n),
+    .ext_ram_OE(ext_ram_oe_n),
+    .ext_ram_WE(ext_ram_we_n),
+    .ext_ram_BE(ext_ram_be_n),
     
     .clk(clk_50M),
     .rst(reset_btn),
-    .ctrl(ctrl),
-    .mode(mode),
-    .in(in_data),
-    .in_addr(in_addr),
-    .out(out_data),
-    .succ(succ),
-    .uart_r_ok(uart_r_ok),
-    .uart_w_ok(uart_w_ok)
+    .CPUclk(CPUclk),
+    
+    .InstAddress(InstAddress),
+    .InstInput(InstInput),
+    
+    .MemReadEN(MemReadEN),
+    .MemWriteEN(MemWriteEN),
+    .MemReadSelect(MemReadSelect),
+    .MemWriteSelect(MemWriteSelect),
+    .MemAddress(MemAddress),
+    .MemWriteData(MemWriteData),
+    .MemReadData(MemReadData)
 );
 
 endmodule
