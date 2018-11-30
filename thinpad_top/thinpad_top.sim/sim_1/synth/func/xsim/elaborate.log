@@ -1,12 +1,12 @@
 Vivado Simulator 2018.2
 Copyright 1986-1999, 2001-2018 Xilinx, Inc. All Rights Reserved.
-Running: E:/Xilinx/Vivado/2018.2/bin/unwrapped/win64.o/xelab.exe -wto 1e0777dd008c45fcbaffd6b18f2c35e9 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L secureip --snapshot tb_func_synth xil_defaultlib.tb xil_defaultlib.glbl -log elaborate.log 
+Running: D:/XilinxVivado_small/Vivado/2018.2/bin/unwrapped/win64.o/xelab.exe -wto 1e0777dd008c45fcbaffd6b18f2c35e9 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L secureip --snapshot tb_func_synth xil_defaultlib.tb xil_defaultlib.glbl -log elaborate.log 
 Using 2 slave threads.
 Starting static elaboration
-WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 1 for port uart_dataready [E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/tb.sv:76]
-WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 1 for port uart_tsre [E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/tb.sv:77]
-WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 1 for port uart_tbre [E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/tb.sv:78]
-WARNING: [VRFC 10-727] function getTime has no return value assignment [E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/include/TimingData.h:182]
+WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 1 for port uart_dataready [D:/3-Autumn/Organization Principles/MakeComputer/FinalProjectFolder/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/tb.sv:76]
+WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 1 for port uart_tsre [D:/3-Autumn/Organization Principles/MakeComputer/FinalProjectFolder/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/tb.sv:77]
+WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 1 for port uart_tbre [D:/3-Autumn/Organization Principles/MakeComputer/FinalProjectFolder/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/tb.sv:78]
+WARNING: [VRFC 10-727] function getTime has no return value assignment [D:/3-Autumn/Organization Principles/MakeComputer/FinalProjectFolder/MakeAComputer/thinpad_top/thinpad_top.srcs/sim_1/new/include/TimingData.h:182]
 Completed static elaboration
 Starting simulation data flow analysis
 Completed simulation data flow analysis
@@ -60,6 +60,7 @@ Compiling module xil_defaultlib.TimingDataModule
 Compiling module xil_defaultlib.TimingLibModule_1
 Compiling module xil_defaultlib.DebugModule
 Compiling module xil_defaultlib.x28fxxxp30(FILENAME_MEM="/tmp/ke...
+Compiling module xil_defaultlib.RegisterFile
 Compiling module xil_defaultlib.tb
 Compiling module xil_defaultlib.glbl
 Built simulation snapshot tb_func_synth
