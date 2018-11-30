@@ -196,4 +196,43 @@ initial begin
         ext2.mem_array1[i] = tmp_array[i][0+:8];
     end
 end
+
+reg clk;
+reg [5:0]ReadRegA;
+reg [5:0]ReadRegB;
+reg [31:0]NPCInput;
+reg [5:0]WriteReg;
+reg [31:0]WriteData;
+reg RegWrite;
+reg [31:0]ReadDataA;
+reg [31:0]ReadDataB;
+
+initial begin
+    RegWrite=1;
+    clk=0;
+    forever #1 clk= ~ clk;
+end
+initial begin
+    #10 WriteReg=23;
+    WriteData=46;
+    #10 WriteReg=3;
+    WriteData=6;
+    ReadRegA=23;
+    #10 WriteReg=0;
+    WriteData=5;
+    ReadRegA=3;
+    #10 ReadRegA=0;                                       
+end
+
+RegisterFile c(
+    .clk(clk),
+    .ReadRegA(ReadRegA),
+    .ReadRegB(ReadRegB),
+    .NPCInput(NPCInput),
+    .WriteReg(WriteReg),
+    .WriteData(WriteData),
+    .RegWrite(RegWrite),
+    .ReadDataA(ReadDataA),
+    .ReadDataB(ReadDataB)
+);
 endmodule
