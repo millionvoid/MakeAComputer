@@ -17,6 +17,7 @@ proc create_report { reportName command } {
     send_msg_id runtcl-5 warning "$msg"
   }
 }
+set_msg_config -id {Common 17-41} -limit 10000000
 create_project -in_memory -part xc7a100tfgg676-2L
 
 set_param project.singleFileAddWarning.threshold 0
@@ -39,6 +40,25 @@ read_verilog -library xil_defaultlib {
   E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/thinpad_top.v
   E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Ctrl_SRAM_UART.v
   E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/UART.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Memory.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/CPU.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegPC.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegIDEX.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegMEMWB.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegEXMEM.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegIFID.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Controller.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/ForwardUnit.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Selector32_2to1.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/MOVZController.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/StallUnit.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Adder32.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/HazardUnit.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/ALU.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegisterFile.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Selector32_4to1.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/BranchSelector.v
+  E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Extender.v
 }
 read_ip -quiet E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/ip/pll_example/pll_example.xci
 set_property used_in_implementation false [get_files -all e:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_board.xdc]

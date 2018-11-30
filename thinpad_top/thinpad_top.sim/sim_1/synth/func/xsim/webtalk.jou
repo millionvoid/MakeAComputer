@@ -2,8 +2,8 @@
 # Webtalk v2018.2 (64-bit)
 # SW Build 2258646 on Thu Jun 14 20:03:12 MDT 2018
 # IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
-# Start of session at: Thu Nov 29 20:47:03 2018
-# Process ID: 5524
+# Start of session at: Fri Nov 30 20:55:42 2018
+# Process ID: 11552
 # Current directory: E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.sim/sim_1/synth/func/xsim
 # Command line: wbtcv.exe -mode batch -source E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.sim/sim_1/synth/func/xsim/xsim.dir/tb_func_synth/webtalk/xsim_webtalk.tcl -notrace
 # Log file: E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.sim/sim_1/synth/func/xsim/webtalk.log

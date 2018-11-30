@@ -40,23 +40,23 @@ wire flash_we_n;         //Flash写使能信号，低有�?
 wire flash_byte_n;       //Flash 8bit模式选择，低有效。在使用flash�?16位模式时请设�?1
 
 //Windows�?要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; //BaseRAM初始化文件，请修改为实际的绝对路�?
-parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路�?
+parameter BASE_RAM_INIT_FILE = "E:\\Xilinx_pro\\MakeAComputer\\test\\kernel.bin"; //BaseRAM初始化文件，请修改为实际的绝对路�?
+parameter EXT_RAM_INIT_FILE = "E:\\Xilinx_pro\\MakeAComputer\\test\\kernel.bin";    //ExtRAM初始化文件，请修改为实际的绝对路�?
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路�?
 
 assign rxd = 1'b1; //idle state
 
-reg ram_data=32'h30;
-assign base_ram_data=ram_data;
+//reg ram_data=32'h30;
+//assign base_ram_data=ram_data;
 
 initial begin 
     //在这里可以自定义测试输入序列，例如：
     dip_sw = 32'h1;
     touch_btn = 0;
-    for (integer i = 0; i < 20; i = i++) begin
-        #100; //等待100ns
+    forever begin
+        #5; //等待100ns
         clock_btn = 1; //按下手工时钟按钮
-        #100; //等待100ns
+        #5; //等待100ns
         clock_btn = 0; //松开手工时钟按钮
     end
 end
