@@ -51,6 +51,8 @@ module RegIDEX(
     input wire RegWriteInput,
     input wire MemToRegInput,
     
+    input wire IsMOVZInput,
+    
     output wire NPCOutput,
         
     output wire RegSrcAOutput,
@@ -74,7 +76,9 @@ module RegIDEX(
     output wire MemWriteSelectOutput,
     
     output wire RegWriteOutput,
-    output wire MemToRegOutput
+    output wire MemToRegOutput,
+    
+    output wire IsMOVZOutput
     );
     
 reg NPC;
@@ -102,6 +106,8 @@ reg MemWriteSelect;
 reg RegWrite;
 reg MemToReg;
 
+reg IsMOVZ;
+
 assign NPCOutput=NPC;
 
 assign RegSrcAOutput=RegSrcA;
@@ -126,6 +132,8 @@ assign MemWriteSelectOutput=MemWriteSelect;
 
 assign RegWriteOutput=RegWrite;
 assign MemToRegOutput=MemToReg;
+
+assign IsMOVZOutput=IsMOVZ;
 
 always@(posedge clk or posedge rst) begin
     if (rst) begin
@@ -153,6 +161,8 @@ always@(posedge clk or posedge rst) begin
         
         RegWrite<=0;
         MemToReg<=0;
+        
+        IsMOVZ<=0;
     end else begin
         if (clr) begin
             NPC<=0;
@@ -179,6 +189,8 @@ always@(posedge clk or posedge rst) begin
             
             RegWrite<=0;
             MemToReg<=0;
+            
+            IsMOVZ<=0;
         end else if (writeEN) begin
             NPC<=NPCInput;
             
@@ -204,6 +216,8 @@ always@(posedge clk or posedge rst) begin
             
             RegWrite<=RegWriteInput;
             MemToReg<=MemToRegInput;
+            
+            IsMOVZ<=IsMOVZInput;
         end
     end
 end

@@ -38,194 +38,429 @@ module CPU(
 wire RegPC;
 
 //IF-ID
-wire IFNPC;
-wire IFInstruction;
+wire IFIDNPC;
+wire IFIDInstruction;
 
 //ID-EX
-wire IDNPC;
+wire IDEXNPC;
 
-wire IDRegSrcA;
-wire IDRegSrcB;
-wire IDRegDest;
+wire IDEXRegSrcA;
+wire IDEXRegSrcB;
+wire IDEXRegDest;
 
-wire IDRegDataA;
-wire IDRegDataB;
+wire IDEXRegDataA;
+wire IDEXRegDataB;
 
-wire IDExtendImm;
+wire IDEXExtendImm;
 
-wire IDALUOp;
-wire IDALUSrc;
-wire IDEXResultSelect;
+wire IDEXALUOp;
+wire IDEXALUSrc;
+wire IDEXEXResultSelect;
 
-wire IDMemRead;
-wire IDMemWrite;
-wire IDBranchType;
-wire IDJumpType;
-wire IDMemReadSelect;
-wire IDMemWriteSelect;
+wire IDEXMemRead;
+wire IDEXMemWrite;
+wire IDEXBranchType;
+wire IDEXJumpType;
+wire IDEXMemReadSelect;
+wire IDEXMemWriteSelect;
 
-wire IDRegWrite;
-wire IDMemToReg;
+wire IDEXRegWrite;
+wire IDEXMemToReg;
+
+wire IDEXIsMOVZ;
 
 //EX-MEM
-wire EXEXResult;
-wire EXRegDest;
-wire EXRegDataB;
+wire EXMEMEXResult;
+wire EXMEMRegDest;
+wire EXMEMRegDataB;
 
-wire EXMemRead;
-wire EXMemWrite;
-wire EXBranchType;
-wire EXJumpType;
-wire EXMemReadSelect;
-wire EXMemWriteSelect;
+wire EXMEMMemRead;
+wire EXMEMMemWrite;
+wire EXMEMBranchType;
+wire EXMEMJumpType;
+wire EXMEMMemReadSelect;
+wire EXMEMMemWriteSelect;
 
-wire EXRegWrite;
-wire EXMemToReg;
+wire EXMEMRegWrite;
+wire EXMEMMemToReg;
 
 //MEM-WB
-wire MEMMemReadData;
-wire MEMEXResult;
-wire MEMRegDest;
+wire MEMWBMemReadData;
+wire MEMWBEXResult;
+wire MEMWBRegDest;
 
-wire MEMRegWrite;
-wire MEMMemToReg;
+wire MEMWBRegWrite;
+wire MEMWBMemToReg;
 
+wire NewPC;
+
+wire PCclr;
+wire PCwriteEN;
 RegPC RegPC_c(
     .clk(clk),
     .rst(rst),
-    .clr(),
-    .writeEN(),
+    .clr(PCclr),
+    .writeEN(PCwriteEN),
     
-    .PCInput(),
+    .PCInput(NewPC),
     
     .PCOutput(RegPC)
 );
 
+assign InstAddress=RegPC;
+
+//TODO: Adder32
+wire IFNPC;
+Adder32 PCAdder(
+    .InputA(RegPC),
+    .InputB(4),
+    .Output(IFNPC)
+);
+
+wire IFIDclr;
+wire IFIDwriteEN;
 RegIFID RegIFID_c(
     .clk(clk),
     .rst(rst),
-    .clr(),
-    .writeEN(),
+    .clr(IFIDclr),
+    .writeEN(IFIDwriteEN),
     
-    .NPCInput(),
-    .InstructionInput(),
+    .NPCInput(IFNPC),
+    .InstructionInput(InstInput),
     
-    .NPCOutput(IFNPC),
-    .InstructionOutput(IFInstruction)
+    .NPCOutput(IFIDNPC),
+    .InstructionOutput(IFIDInstruction)
 );
 
+//TODO:Extender
+wire IDExtendImm;
+Extender Extender_c(
+    .Instruction(IFIDInstruction),
+    .ExtendImm(IDExtendImm)
+);
+
+//TODO:Controller
+wire IDEXResultSelect;
+wire IDRegWrite;
+wire IDMemRead;
+wire IDMemWrite;
+wire IDBranchType;
+wire IDJumpType;
+wire IDRegSrcA;
+wire IDRegSrcB;
+wire IDRegDest;
+wire IDALUSrc;
+wire IDMemToReg;
+wire IDMemReadSelect;
+wire IDMemWriteSelect;
+wire IDIsMOVZ;
+wire IDALUOp;
+Controller Controller_c(
+    .Instruction(IFIDInstruction),
+    .EXResultSelect(IDEXResultSelect),
+    .RegWrite(IDRegWrite),
+    .MemRead(IDMemRead),
+    .MemWrite(IDMemWrite),
+    .BranchType(IDBranchType),
+    .JumpType(IDJumpType),
+    .RegSrcA(IDRegSrcA),
+    .RegSrcB(IDRegSrcB),
+    .RegDest(IDRegDest),
+    .ALUSrc(IDALUSrc),
+    .MemToReg(IDMemToReg),
+    .MemReadSelect(IDMemReadSelect),
+    .MemWriteSelect(IDMemWriteSelect),
+    .IsMOVZ(IDIsMOVZ),
+    .ALUOp(IDALUOp)
+);
+
+//TODO:RegisterFile
+wire IDRegDataA;
+wire IDRegDataB;
+wire WBWriteData; //WriteBack
+RegisterFile RegisterFile_c(
+    //input
+    .ReadRegA(IDRegSrcA),
+    .ReadRegB(IDRegSrcB),
+    .NPCInput(IFIDNPC),
+    
+    //output
+    .ReadDataA(IDRegDataA),
+    .ReadDataB(IDRegDataB),
+    
+    //input
+    .WriteReg(MEMWBRegDest),
+    .WriteData(WBWriteData)
+);
+
+//HazardUnit
+wire IDHazardHappen;
+HazardUnit HazardUnit_c(
+    .IDEXMemRead(IDEXMemRead),
+    .IDEXRegDest(IDEXRegDest),
+    .IDRegSrcA(IDRegSrcA),
+    .IDRegSrcB(IDRegSrcB),
+    .HazardHappen(IDHazardHappen)
+);
+
+wire IDEXclr;
+wire IDEXwriteEN;
 RegIDEX RegIDEX_c(
     .clk(clk),
     .rst(rst),
-    .clr(),
-    .writeEN(),
+    .clr(IDEXclr),
+    .writeEN(IDEXwriteEN),
     
-    .NPCInput(),
+    .NPCInput(IFIDNPC),
         
-    .RegSrcAInput(),
-    .RegSrcBInput(),
-    .RegDestInput(),
+    .RegSrcAInput(IDRegSrcA),
+    .RegSrcBInput(IDRegSrcB),
+    .RegDestInput(IDRegDest),
     
     .RegDataAInput(),
     .RegDataBInput(),
     
-    .ExtendImmInput(),
+    .ExtendImmInput(IDExtendImm),
     
-    .ALUOpInput(),
-    .ALUSrcInput(),
-    .EXResultSelectInput(),
+    .ALUOpInput(IDALUOp),
+    .ALUSrcInput(IDALUSrc),
+    .EXResultSelectInput(IDEXResultSelect),
     
-    .MemReadInput(),
-    .MemWriteInput(),
-    .BranchTypeInput(),
-    .JumpTypeInput(),
-    .MemReadSelectInput(),
-    .MemWriteSelectInput(),
+    .MemReadInput(IDMemRead),
+    .MemWriteInput(IDMemWrite),
+    .BranchTypeInput(IDBranchType),
+    .JumpTypeInput(IDJumpType),
+    .MemReadSelectInput(IDMemReadSelect),
+    .MemWriteSelectInput(IDMemWriteSelect),
     
-    .RegWriteInput(),
-    .MemToRegInput(),
+    .RegWriteInput(IDRegWrite),
+    .MemToRegInput(IDMemToReg),
     
-    .NPCOutput(IDNPC),
+    .IsMOVZInput(IDIsMOVZ),
+    
+    .NPCOutput(IDEXNPC),
         
-    .RegSrcAOutput(IDRegSrcA),
-    .RegSrcBOutput(IDRegSrcB),
-    .RegDestOutput(IDRegDest),
+    .RegSrcAOutput(IDEXRegSrcA),
+    .RegSrcBOutput(IDEXRegSrcB),
+    .RegDestOutput(IDEXRegDest),
     
-    .RegDataAOutput(IDRegDataA),
-    .RegDataBOutput(IDRegDataB),
+    .RegDataAOutput(IDEXRegDataA),
+    .RegDataBOutput(IDEXRegDataB),
     
-    .ExtendImmOutput(IDExtendImm),
+    .ExtendImmOutput(IDEXExtendImm),
     
-    .ALUOpOutput(IDALUOp),
-    .ALUSrcOutput(IDALUSrc),
-    .EXResultSelectOutput(IDEXResultSelect),
+    .ALUOpOutput(IDEXALUOp),
+    .ALUSrcOutput(IDEXALUSrc),
+    .EXResultSelectOutput(IDEXEXResultSelect),
     
-    .MemReadOutput(IDMemRead),
-    .MemWriteOutput(IDMemWrite),
-    .BranchTypeOutput(IDBranchType),
-    .JumpTypeOutput(IDJumpType),
-    .MemReadSelectOutput(IDMemReadSelect),
-    .MemWriteSelectOutput(IDMemReadSelect),
+    .MemReadOutput(IDEXMemRead),
+    .MemWriteOutput(IDEXMemWrite),
+    .BranchTypeOutput(IDEXBranchType),
+    .JumpTypeOutput(IDEXJumpType),
+    .MemReadSelectOutput(IDEXMemReadSelect),
+    .MemWriteSelectOutput(IDEXMemReadSelect),
     
-    .RegWriteOutput(IDRegWrite),
-    .MemToRegOutput(IDMemToReg)
+    .RegWriteOutput(IDEXRegWrite),
+    .MemToRegOutput(IDEXMemToReg),
+    
+    .IsMOVZOutput(IDEXIsMOVZ)
 );
 
+//ForwardUnit
+wire EXForwardA;
+wire EXForwardB;
+ForwardUnit ForwardUnit_c(
+    // input
+    .EXMEMRegWrite(EXMEMRegWrite),
+    .MEMWBRegWrite(MEMWBRegWrite),
+    .EXMEMRegDest(EXMEMRegDest),
+    .MEMWBRegDest(MEMWBRegDest),
+    .IDEXRegSrcA(IDEXRegSrcA),
+    .IDEXRegSrcB(IDEXRegSrcB),
+    
+    // output
+    .ForwardA(EXForwardA),
+    .ForwardB(EXForwardB)
+);
+
+//Select RegA and RegB
+wire EXRegA;
+wire EXRegB;
+Selector32_4to1 EXRegASelector(
+    .InputA(IDEXRegDataA),
+    .InputB(EXMEMEXResult),
+    .InputC(WBWriteData),
+    .InputD(0),
+    .Control(EXForwardA),
+    .Output(EXRegA)
+);
+Selector32_4to1 EXRegBSelector(
+    .InputA(IDEXRegDataB),
+    .InputB(EXMEMEXResult),
+    .InputC(WBWriteData),
+    .InputD(0),
+    .Control(EXForwardB),
+    .Output(EXRegB)
+);
+
+//Select ALUSrc
+wire EXInputB;
+Selector32_2to1 EXInputBSelector(
+    .InputA(EXRegB),
+    .InputB(IDEXExtendImm),
+    .Control(IDEXALUSrc),
+    .Output(EXInputB)
+);
+
+//ALU
+wire EXOutput;
+ALU ALU_c(
+    .ALUOp(IDEXALUOp),
+    .InputA(EXRegA),
+    .InputB(EXInputB),
+    .Output(EXOutput)
+);
+
+//Select EXResult
+wire EXEXResult;
+Selector32_4to1 EXEXResultSelector(
+    .InputA(EXOutput),
+    .InputB(EXRegA),
+    .InputC(EXInputB),
+    .Control(IDEXEXResultSelect),
+    .Output(EXEXResult)
+);
+
+//MOVZController
+wire EXRegWrite;
+MOVZController MOVZController_c(
+    .EXResult(EXOutput),
+    .IsMOVZ(IDEXIsMOVZ),
+    .OldRegWrite(IDEXRegWrite),
+    .NewRegWrite(EXRegWrite)
+);
+
+//Calculate BranchPC
+wire EXBranchPC;
+Adder32 BranchPCAdder(
+    .InputA(IDEXNPC),
+    .InputB(IDEXExtendImm),
+    .Output(EXBranchPC)
+);
+
+//BranchSelector
+wire EXBranchSelect;
+wire EXBranchHappen;
+BranchSelector BranchSelector_c(
+    // input
+    .BranchType(IDEXBranchType),
+    .JumpType(IDEXJumpType),
+    .EXRegA(EXRegA),
+    .EXRegB(EXRegB),
+    
+    // output
+    .BranchSelect(EXBranchSelect),
+    .BranchHappen(EXBranchHappen)
+);
+
+//Select NewPC
+Selector32_4to1 NewPCSelector(
+    .InputA(IDEXNPC),
+    .InputB(EXBranchPC),
+    .InputC(EXRegA),
+    .InputD(IDEXExtendImm),
+    .Control(EXBranchSelect),
+    .Output(NewPC)
+);
+
+wire EXMEMclr;
+wire EXMEMwriteEN;
 RegEXMEM RegEXMEM_c(
     .clk(clk),
     .rst(rst),
-    .clr(),
-    .writeEN(),
+    .clr(EXMEMclr),
+    .writeEN(EXMEMwriteEN),
     
-    .EXResultInput(),
-    .RegDestInput(),
-    .RegDataBInput(),
+    .EXResultInput(EXEXResult),
+    .RegDestInput(IDEXRegDest),
+    .RegDataBInput(EXRegB),
     
-    .MemReadInput(),
-    .MemWriteInput(),
-    .BranchTypeInput(),
-    .JumpTypeInput(),
-    .MemReadSelectInput(),
-    .MemWriteSelectInput(),
+    .MemReadInput(IDEXMemRead),
+    .MemWriteInput(IDEXMemWrite),
+    .BranchTypeInput(IDEXBranchType),
+    .JumpTypeInput(IDEXJumpType),
+    .MemReadSelectInput(IDEXMemReadSelect),
+    .MemWriteSelectInput(IDEXMemWriteSelect),
     
-    .RegWriteInput(),
-    .MemToRegInput(),
+    .RegWriteInput(EXRegWrite),
+    .MemToRegInput(IDEXMemToReg),
     
-    .EXResultOutput(EXEXResult),
-    .RegDestOutput(EXRegDest),
-    .RegDataBOutput(EXRegDataB),
+    .EXResultOutput(EXMEMEXResult),
+    .RegDestOutput(EXMEMRegDest),
+    .RegDataBOutput(EXMEMRegDataB),
     
-    .MemReadOutput(EXMemRead),
-    .MemWriteOutput(EXMemWrite),
-    .BranchTypeOutput(EXBranchType),
-    .JumpTypeOutput(EXJumpType),
-    .MemReadSelectOutput(EXMemReadSelect),
-    .MemWriteSelectOutput(EXMemReadSelect),
+    .MemReadOutput(EXMEMMemRead),
+    .MemWriteOutput(EXMEMMemWrite),
+    .BranchTypeOutput(EXMEMBranchType),
+    .JumpTypeOutput(EXMEMJumpType),
+    .MemReadSelectOutput(EXMEMMemReadSelect),
+    .MemWriteSelectOutput(EXMEMMemWriteSelect),
     
-    .RegWriteOutput(EXRegWrite),
-    .MemToRegOutput(EXMemToReg)
+    .RegWriteOutput(EXMEMRegWrite),
+    .MemToRegOutput(EXMEMMemToReg)
 );
 
+assign MemAddress=EXMEMEXResult;
+assign MemWriteData=EXMEMRegDataB;
+assign MemReadEN=EXMEMMemRead;
+assign MemWriteEN=EXMEMMemWrite;
+assign MemReadSelect=EXMEMMemReadSelect;
+assign MemWriteSelect=EXMEMMemWriteSelect;
+
+wire MEMWBclr;
+wire MEMWBwriteEN;
 RegMEMWB RegMEMWB_c(
     .clk(clk),
     .rst(rst),
-    .clr(),
-    .writeEN(),
+    .clr(MEMWBclr),
+    .writeEN(MEMWBwriteEN),
     
-    .MemReadDataInput(),
-    .EXResultInput(),
-    .RegDestInput(),
+    .MemReadDataInput(MemReadData),
+    .EXResultInput(EXMEMEXResult),
+    .RegDestInput(EXMEMRegDest),
     
-    .RegWriteInput(),
-    .MemToRegInput(),
+    .RegWriteInput(EXMEMRegWrite),
+    .MemToRegInput(EXMEMMemToReg),
      
-    .MemReadDataOutput(MEMMemReadData),
-    .EXResultOutput(MEMEXResult),
-    .RegDestOutput(MEMRegDest),
+    .MemReadDataOutput(MEMWBMemReadData),
+    .EXResultOutput(MEMWBEXResult),
+    .RegDestOutput(MEMWBRegDest),
     
-    .RegWriteOutput(MEMRegWrite),
-    .MemToRegOutput(MEMMemToReg)
+    .RegWriteOutput(MEMWBRegWrite),
+    .MemToRegOutput(MEMWBMemToReg)
 );
 
+//Select WriteData
+Selector32_2to1 WBWriteDataSelector(
+    .InputA(MEMWBEXResult),
+    .InputB(MEMWBMemReadData),
+    .Control(MEMWBMemToReg),
+    .Output(WBWriteData)
+);
 
+//StallUnit
+StallUnit StallUnit_c(
+    .BranchHappen(EXBranchHappen),
+    .HazardHappen(IDHazardHappen),
+    .PCWriteEN(PCwriteEN),
+    .PCClear(PCclr),
+    .IFIDWriteEN(IFIDwriteEN),
+    .IFIDClear(IFIDclr),
+    .IDEXWriteEN(IDEXwriteEN),
+    .IDEXClear(IDEXclr),
+    .EXMEMWriteEN(EXMEMwriteEN),
+    .EXMEMClear(EXMEMclr),
+    .MEMWBWriteEN(MEMWBwriteEN),
+    .MEMWBClear(MEMWBclr)
+);
 endmodule
