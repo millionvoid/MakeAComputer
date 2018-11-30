@@ -116,3 +116,214 @@ add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new
 reset_run synth_1
 launch_runs synth_1 -jobs 2
 wait_on_run synth_1
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Controller.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Controller.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/ForwardUnit.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/ForwardUnit.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Selector32_2to1.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Selector32_2to1.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/MOVZController.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/MOVZController.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/StallUnit.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/StallUnit.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Adder32.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Adder32.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/HazardUnit.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/HazardUnit.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/ALU.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/ALU.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegisterFile.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/RegisterFile.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Selector32_4to1.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Selector32_4to1.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/BranchSelector.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/BranchSelector.v
+close [ open E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Extender.v w ]
+add_files E:/Xilinx_pro/MakeAComputer/thinpad_top/thinpad_top.srcs/sources_1/new/Extender.v
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_simulation
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_runs impl_1 -jobs 2
+wait_on_run impl_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+close_sim
+reset_run impl_1 -prev_step 
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+close_sim
+close_design
+launch_simulation -mode post-synthesis -type functional
+source tb.tcl
