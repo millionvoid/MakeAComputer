@@ -1,0 +1,9 @@
+/thinpad_top.runs
+/thinpad_top.sim
+/thinpad_top.ip_user_files
+/thinpad_top.hw
+/thinpad_top.cache
+vivado*
+build.tcl
+ip_upgrade.log
+*.xpr
