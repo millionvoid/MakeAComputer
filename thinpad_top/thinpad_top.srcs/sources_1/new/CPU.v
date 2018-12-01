@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer:  Jia Minglin
 // 
-// Create Date: 2018/11/30 06:16:58
+// Create Date: 2018/11/30 04:01:06
 // Design Name: 
-// Module Name: CPU
-// Project Name: 
+// Module Name: Controller
+// Project Name: MIPS32 Computer
 // Target Devices: 
 // Tool Versions: 
 // Description: 
@@ -20,447 +20,173 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module CPU(
-    input wire clk,
-    input wire rst,
-    output wire[31:0] InstAddress,
-    input wire[31:0] InstInput,
-    output wire[31:0] MemAddress,
-    input wire[31:0] MemReadData,
-    output wire[31:0] MemWriteData,
-    output wire MemReadEN,
-    output wire MemWriteEN,
-    output wire MemReadSelect,
-    output wire MemWriteSelect
-    );
-
-//Before IF
-wire RegPC;
-
-//IF-ID
-wire IFIDNPC;
-wire IFIDInstruction;
-
-//ID-EX
-wire IDEXNPC;
-
-wire IDEXRegSrcA;
-wire IDEXRegSrcB;
-wire IDEXRegDest;
-
-wire IDEXRegDataA;
-wire IDEXRegDataB;
-
-wire IDEXExtendImm;
-
-wire IDEXALUOp;
-wire IDEXALUSrc;
-wire IDEXEXResultSelect;
-
-wire IDEXMemRead;
-wire IDEXMemWrite;
-wire IDEXBranchType;
-wire IDEXJumpType;
-wire IDEXMemReadSelect;
-wire IDEXMemWriteSelect;
-
-wire IDEXRegWrite;
-wire IDEXMemToReg;
-
-wire IDEXIsMOVZ;
-
-//EX-MEM
-wire EXMEMEXResult;
-wire EXMEMRegDest;
-wire EXMEMRegDataB;
-
-wire EXMEMMemRead;
-wire EXMEMMemWrite;
-wire EXMEMBranchType;
-wire EXMEMJumpType;
-wire EXMEMMemReadSelect;
-wire EXMEMMemWriteSelect;
-
-wire EXMEMRegWrite;
-wire EXMEMMemToReg;
-
-//MEM-WB
-wire MEMWBMemReadData;
-wire MEMWBEXResult;
-wire MEMWBRegDest;
-
-wire MEMWBRegWrite;
-wire MEMWBMemToReg;
-
-wire NewPC;
-
-wire PCclr;
-wire PCwriteEN;
-RegPC RegPC_c(
-    .clk(clk),
-    .rst(rst),
-    .clr(PCclr),
-    .writeEN(PCwriteEN),
-    
-    .PCInput(NewPC),
-    
-    .PCOutput(RegPC)
-);
-
-assign InstAddress=RegPC;
-
-//TODO: Adder32
-wire IFNPC;
-Adder32 PCAdder(
-    .InputA(RegPC),
-    .InputB(4),
-    .Output(IFNPC)
-);
-
-wire IFIDclr;
-wire IFIDwriteEN;
-RegIFID RegIFID_c(
-    .clk(clk),
-    .rst(rst),
-    .clr(IFIDclr),
-    .writeEN(IFIDwriteEN),
-    
-    .NPCInput(IFNPC),
-    .InstructionInput(InstInput),
-    
-    .NPCOutput(IFIDNPC),
-    .InstructionOutput(IFIDInstruction)
-);
-
-//TODO:Extender
-wire IDExtendImm;
-Extender Extender_c(
-    .Instruction(IFIDInstruction),
-    .ExtendImm(IDExtendImm)
-);
-
-//TODO:Controller
-wire IDEXResultSelect;
-wire IDRegWrite;
-wire IDMemRead;
-wire IDMemWrite;
-wire IDBranchType;
-wire IDJumpType;
-wire IDRegSrcA;
-wire IDRegSrcB;
-wire IDRegDest;
-wire IDALUSrc;
-wire IDMemToReg;
-wire IDMemReadSelect;
-wire IDMemWriteSelect;
-wire IDIsMOVZ;
-wire IDALUOp;
-Controller Controller_c(
-    .Instruction(IFIDInstruction),
-    .EXResultSelect(IDEXResultSelect),
-    .RegWrite(IDRegWrite),
-    .MemRead(IDMemRead),
-    .MemWrite(IDMemWrite),
-    .BranchType(IDBranchType),
-    .JumpType(IDJumpType),
-    .RegSrcA(IDRegSrcA),
-    .RegSrcB(IDRegSrcB),
-    .RegDest(IDRegDest),
-    .ALUSrc(IDALUSrc),
-    .MemToReg(IDMemToReg),
-    .MemReadSelect(IDMemReadSelect),
-    .MemWriteSelect(IDMemWriteSelect),
-    .IsMOVZ(IDIsMOVZ),
-    .ALUOp(IDALUOp)
-);
-
-//TODO:RegisterFile
-wire IDRegDataA;
-wire IDRegDataB;
-wire WBWriteData; //WriteBack
-RegisterFile RegisterFile_c(
-    //input
-    .ReadRegA(IDRegSrcA),
-    .ReadRegB(IDRegSrcB),
-    .NPCInput(IFIDNPC),
-    
-    //output
-    .ReadDataA(IDRegDataA),
-    .ReadDataB(IDRegDataB),
-    
-    //input
-    .WriteReg(MEMWBRegDest),
-    .WriteData(WBWriteData)
-);
-
-//HazardUnit
-wire IDHazardHappen;
-HazardUnit HazardUnit_c(
-    .IDEXMemRead(IDEXMemRead),
-    .IDEXRegDest(IDEXRegDest),
-    .IDRegSrcA(IDRegSrcA),
-    .IDRegSrcB(IDRegSrcB),
-    .HazardHappen(IDHazardHappen)
-);
-
-wire IDEXclr;
-wire IDEXwriteEN;
-RegIDEX RegIDEX_c(
-    .clk(clk),
-    .rst(rst),
-    .clr(IDEXclr),
-    .writeEN(IDEXwriteEN),
-    
-    .NPCInput(IFIDNPC),
-        
-    .RegSrcAInput(IDRegSrcA),
-    .RegSrcBInput(IDRegSrcB),
-    .RegDestInput(IDRegDest),
-    
-    .RegDataAInput(),
-    .RegDataBInput(),
-    
-    .ExtendImmInput(IDExtendImm),
-    
-    .ALUOpInput(IDALUOp),
-    .ALUSrcInput(IDALUSrc),
-    .EXResultSelectInput(IDEXResultSelect),
-    
-    .MemReadInput(IDMemRead),
-    .MemWriteInput(IDMemWrite),
-    .BranchTypeInput(IDBranchType),
-    .JumpTypeInput(IDJumpType),
-    .MemReadSelectInput(IDMemReadSelect),
-    .MemWriteSelectInput(IDMemWriteSelect),
-    
-    .RegWriteInput(IDRegWrite),
-    .MemToRegInput(IDMemToReg),
-    
-    .IsMOVZInput(IDIsMOVZ),
-    
-    .NPCOutput(IDEXNPC),
-        
-    .RegSrcAOutput(IDEXRegSrcA),
-    .RegSrcBOutput(IDEXRegSrcB),
-    .RegDestOutput(IDEXRegDest),
-    
-    .RegDataAOutput(IDEXRegDataA),
-    .RegDataBOutput(IDEXRegDataB),
-    
-    .ExtendImmOutput(IDEXExtendImm),
-    
-    .ALUOpOutput(IDEXALUOp),
-    .ALUSrcOutput(IDEXALUSrc),
-    .EXResultSelectOutput(IDEXEXResultSelect),
-    
-    .MemReadOutput(IDEXMemRead),
-    .MemWriteOutput(IDEXMemWrite),
-    .BranchTypeOutput(IDEXBranchType),
-    .JumpTypeOutput(IDEXJumpType),
-    .MemReadSelectOutput(IDEXMemReadSelect),
-    .MemWriteSelectOutput(IDEXMemReadSelect),
-    
-    .RegWriteOutput(IDEXRegWrite),
-    .MemToRegOutput(IDEXMemToReg),
-    
-    .IsMOVZOutput(IDEXIsMOVZ)
-);
-
-//ForwardUnit
-wire EXForwardA;
-wire EXForwardB;
-ForwardUnit ForwardUnit_c(
-    // input
-    .EXMEMRegWrite(EXMEMRegWrite),
-    .MEMWBRegWrite(MEMWBRegWrite),
-    .EXMEMRegDest(EXMEMRegDest),
-    .MEMWBRegDest(MEMWBRegDest),
-    .IDEXRegSrcA(IDEXRegSrcA),
-    .IDEXRegSrcB(IDEXRegSrcB),
-    
-    // output
-    .ForwardA(EXForwardA),
-    .ForwardB(EXForwardB)
-);
-
-//Select RegA and RegB
-wire EXRegA;
-wire EXRegB;
-Selector32_4to1 EXRegASelector(
-    .InputA(IDEXRegDataA),
-    .InputB(EXMEMEXResult),
-    .InputC(WBWriteData),
-    .InputD(0),
-    .Control(EXForwardA),
-    .Output(EXRegA)
-);
-Selector32_4to1 EXRegBSelector(
-    .InputA(IDEXRegDataB),
-    .InputB(EXMEMEXResult),
-    .InputC(WBWriteData),
-    .InputD(0),
-    .Control(EXForwardB),
-    .Output(EXRegB)
-);
-
-//Select ALUSrc
-wire EXInputB;
-Selector32_2to1 EXInputBSelector(
-    .InputA(EXRegB),
-    .InputB(IDEXExtendImm),
-    .Control(IDEXALUSrc),
-    .Output(EXInputB)
-);
-
-//ALU
-wire EXOutput;
-ALU ALU_c(
-    .ALUOp(IDEXALUOp),
-    .InputA(EXRegA),
-    .InputB(EXInputB),
-    .Output(EXOutput)
-);
-
-//Select EXResult
-wire EXEXResult;
-Selector32_4to1 EXEXResultSelector(
-    .InputA(EXOutput),
-    .InputB(EXRegA),
-    .InputC(EXInputB),
-    .Control(IDEXEXResultSelect),
-    .Output(EXEXResult)
-);
-
-//MOVZController
-wire EXRegWrite;
-MOVZController MOVZController_c(
-    .EXResult(EXOutput),
-    .IsMOVZ(IDEXIsMOVZ),
-    .OldRegWrite(IDEXRegWrite),
-    .NewRegWrite(EXRegWrite)
-);
-
-//Calculate BranchPC
-wire EXBranchPC;
-Adder32 BranchPCAdder(
-    .InputA(IDEXNPC),
-    .InputB(IDEXExtendImm),
-    .Output(EXBranchPC)
-);
-
-//BranchSelector
-wire EXBranchSelect;
-wire EXBranchHappen;
-BranchSelector BranchSelector_c(
-    // input
-    .BranchType(IDEXBranchType),
-    .JumpType(IDEXJumpType),
-    .EXRegA(EXRegA),
-    .EXRegB(EXRegB),
-    
-    // output
-    .BranchSelect(EXBranchSelect),
-    .BranchHappen(EXBranchHappen)
-);
-
-//Select NewPC
-Selector32_4to1 NewPCSelector(
-    .InputA(IDEXNPC),
-    .InputB(EXBranchPC),
-    .InputC(EXRegA),
-    .InputD(IDEXExtendImm),
-    .Control(EXBranchSelect),
-    .Output(NewPC)
-);
-
-wire EXMEMclr;
-wire EXMEMwriteEN;
-RegEXMEM RegEXMEM_c(
-    .clk(clk),
-    .rst(rst),
-    .clr(EXMEMclr),
-    .writeEN(EXMEMwriteEN),
-    
-    .EXResultInput(EXEXResult),
-    .RegDestInput(IDEXRegDest),
-    .RegDataBInput(EXRegB),
-    
-    .MemReadInput(IDEXMemRead),
-    .MemWriteInput(IDEXMemWrite),
-    .BranchTypeInput(IDEXBranchType),
-    .JumpTypeInput(IDEXJumpType),
-    .MemReadSelectInput(IDEXMemReadSelect),
-    .MemWriteSelectInput(IDEXMemWriteSelect),
-    
-    .RegWriteInput(EXRegWrite),
-    .MemToRegInput(IDEXMemToReg),
-    
-    .EXResultOutput(EXMEMEXResult),
-    .RegDestOutput(EXMEMRegDest),
-    .RegDataBOutput(EXMEMRegDataB),
-    
-    .MemReadOutput(EXMEMMemRead),
-    .MemWriteOutput(EXMEMMemWrite),
-    .BranchTypeOutput(EXMEMBranchType),
-    .JumpTypeOutput(EXMEMJumpType),
-    .MemReadSelectOutput(EXMEMMemReadSelect),
-    .MemWriteSelectOutput(EXMEMMemWriteSelect),
-    
-    .RegWriteOutput(EXMEMRegWrite),
-    .MemToRegOutput(EXMEMMemToReg)
-);
-
-assign MemAddress=EXMEMEXResult;
-assign MemWriteData=EXMEMRegDataB;
-assign MemReadEN=EXMEMMemRead;
-assign MemWriteEN=EXMEMMemWrite;
-assign MemReadSelect=EXMEMMemReadSelect;
-assign MemWriteSelect=EXMEMMemWriteSelect;
-
-wire MEMWBclr;
-wire MEMWBwriteEN;
-RegMEMWB RegMEMWB_c(
-    .clk(clk),
-    .rst(rst),
-    .clr(MEMWBclr),
-    .writeEN(MEMWBwriteEN),
-    
-    .MemReadDataInput(MemReadData),
-    .EXResultInput(EXMEMEXResult),
-    .RegDestInput(EXMEMRegDest),
-    
-    .RegWriteInput(EXMEMRegWrite),
-    .MemToRegInput(EXMEMMemToReg),
-     
-    .MemReadDataOutput(MEMWBMemReadData),
-    .EXResultOutput(MEMWBEXResult),
-    .RegDestOutput(MEMWBRegDest),
-    
-    .RegWriteOutput(MEMWBRegWrite),
-    .MemToRegOutput(MEMWBMemToReg)
-);
-
-//Select WriteData
-Selector32_2to1 WBWriteDataSelector(
-    .InputA(MEMWBEXResult),
-    .InputB(MEMWBMemReadData),
-    .Control(MEMWBMemToReg),
-    .Output(WBWriteData)
-);
-
-//StallUnit
-StallUnit StallUnit_c(
-    .BranchHappen(EXBranchHappen),
-    .HazardHappen(IDHazardHappen),
-    .PCWriteEN(PCwriteEN),
-    .PCClear(PCclr),
-    .IFIDWriteEN(IFIDwriteEN),
-    .IFIDClear(IFIDclr),
-    .IDEXWriteEN(IDEXwriteEN),
-    .IDEXClear(IDEXclr),
-    .EXMEMWriteEN(EXMEMwriteEN),
-    .EXMEMClear(EXMEMclr),
-    .MEMWBWriteEN(MEMWBwriteEN),
-    .MEMWBClear(MEMWBclr)
-);
+module Controller(
+	input wire[31:0] Instruction,
+	
+	output reg ExResultSelect,
+	output reg RegWrite,
+	output reg MemRead,
+	output reg MemWrite,
+	output reg[1:0] BranchType,
+	output reg[1:0] JumpType,
+	output reg[5:0] RegSrcA,
+	output reg[5:0] RegSrcB,
+	output reg[5:0] RegDest,
+	output reg ALUSrc,
+	output reg MemToReg,
+	output reg MemReadSelect,
+	output reg MemWriteSelect,
+	output reg IsMOVZ,
+	output reg[3:0] ALUOp
+	);
+	
+always@(*)begin
+	case (Instruction[31:26])
+		6'b0:begin
+			case (Instruction[5:0])
+				6'b100001://ADDU
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b0,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b0,2'b0,1'b0,1'b0,4'h3};
+				end
+				6'b100100://AND
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h4};
+				end
+				6'b001000://JR
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b0,1'b0,1'b0,2'b0,2'b10,Instruction[25:21],Instruction[25:21],5'b0,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
+				end
+				6'b100101://OR
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h5};
+				end
+				6'b000000:
+					if(Instruction!=0)//SLL
+						begin
+							{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+							{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[20:16],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h8};
+						end
+					else//NOP
+						begin
+							{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+							{2'b00,1'b0,1'b0,1'b0,2'b0,2'b0,5'b0,5'b0,5'b0,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
+						end
+				6'b000010://SRL
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[20:16],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h9};
+				end
+				6'b100110://XOR
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h6};
+				end
+				6'b000011://SRA
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[20:16],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'ha};
+				end
+				6'b100111://NOR
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h7};
+				end
+				6'b001010://MOVZ
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+					{2'b10,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b1,4'hc};
+				end
+			endcase
+		end
+		6'b001001 ://ADDIU
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b0,2'b0,1'b0,1'b0,4'h3};
+		end
+		6'b001100 ://ANDI 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b0,2'b0,1'b0,1'b0,4'h4};
+		end
+		6'b000100 ://BEQ 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b0,2'b1,2'b0,Instruction[25:21],Instruction[20:16],5'b0,1'b1,1'b0,2'b0,1'b0,1'b0,4'h0};
+		end
+		6'b000111 ://BGTZ 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b0,2'b11,2'b0,Instruction[25:21],Instruction[25:21],5'b0,1'b1,1'b0,2'b0,1'b0,1'b0,4'h0};
+		end
+		6'b000101 ://BNE 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b0,2'b10,2'b0,Instruction[25:21],Instruction[20:16],5'b0,1'b1,1'b0,2'b0,1'b0,1'b0,4'h0};
+		end
+		6'b000010 ://J 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b0,2'b0,2'b1,5'b0,5'b0,5'b0,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
+		end
+		6'b000011 ://JAL
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,5'b0,5'b0,5'b0,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
+		end
+		6'b100000 ://LB 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b1,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b1,2'b1,1'b0,1'b0,4'h3};
+		end
+		6'b001111 ://LUI
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b0,2'b0,2'b0,5'b0,5'b0,Instruction[20:16],1'b1,1'b0,2'b0,1'b0,1'b0,4'hd};
+		end
+		6'b100011 ://LW
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b1,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b1,2'b0,1'b0,1'b0,4'h3};
+		end
+		6'b001101 ://ORI
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b0,2'b0,1'b0,1'b0,4'h5};
+		end
+		6'b101000 ://SB
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b1,2'b0,2'b0,Instruction[25:21],Instruction[20:16],5'b0,1'b1,1'b0,2'b0,1'b1,1'b0,4'h3};
+		end
+		6'b101011 ://SW
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b0,1'b0,1'b1,2'b0,2'b0,Instruction[25:21],Instruction[20:16],5'b0,1'b1,1'b0,2'b0,1'b0,1'b0,4'h3};
+		end
+		6'b001110 ://XORI 
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b0,2'b0,1'b0,1'b0,4'h6};
+		end
+		6'b100100 ://LBU
+		begin
+			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			{2'b00,1'b1,1'b1,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[25:21],Instruction[20:16],1'b1,1'b1,2'b10,1'b0,1'b0,4'h3};
+		end
+		6'b011100:begin
+			case (Instruction[5:0])
+				6'b100000://CLZ
+				begin
+					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+			        {2'b00,1'b1,1'b0,1'b0,2'b0,2'b0,Instruction[25:21],Instruction[20:16],Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'hb};
+				end
+			endcase
+		end
+		default:;
+	endcase;
+end
 endmodule
