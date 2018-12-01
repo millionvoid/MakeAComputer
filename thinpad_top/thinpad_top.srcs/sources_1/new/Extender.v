@@ -50,6 +50,13 @@ function [31:0] SignExtend_16to32;
 	end
 endfunction
 
+function [31:0] ZeroExtend_16to32; 
+   input wire[15:0]InImm;
+	begin
+		ZeroExtend_16to32={16'b0000000000000000,InImm};
+	end
+endfunction
+
 always @(*) begin
 	case (Instruction[31:26])
 		6'b000000:begin
@@ -58,14 +65,18 @@ always @(*) begin
 				default:ExtendImm<=0;
 			endcase
 		end
-		6'b001001,6'b001100,6'b000100,6'b000111,6'b000101,6'b100000,6'b001111,6'b100011,6'b001101,6'b101000,6'b101011,6'b001110,6'b100100:
-		//ADDIU,ANDI,BEQ,BGTZ,BNE,LB,LUI,LW,ORI,SB,SW,XORI,LBU
+		6'b001001:
+		begin
+            ExtendImm<=ZeroExtend_16to32(Instruction[15:0]);
+        end
+		6'b001100,6'b000100,6'b000111,6'b000101,6'b100000,6'b001111,6'b100011,6'b001101,6'b101000,6'b101011,6'b001110,6'b100100:
+		//ANDI,BEQ,BGTZ,BNE,LB,LUI,LW,ORI,SB,SW,XORI,LBU
 		begin
 			ExtendImm<=SignExtend_16to32(Instruction[15:0]);
 		end
 		6'b000010,6'b000011 ://J,JAL
 		begin
-			ExtendImm<=SignExtend_26to32(Instruction[25:0]);
+			ExtendImm<=ZeroExtend_26to32(Instruction[25:0]);
 		end
 		default:ExtendImm<=0;
 	endcase;
