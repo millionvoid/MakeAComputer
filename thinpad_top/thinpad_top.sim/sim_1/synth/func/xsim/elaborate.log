@@ -60,7 +60,7 @@ Compiling module xil_defaultlib.TimingDataModule
 Compiling module xil_defaultlib.TimingLibModule_1
 Compiling module xil_defaultlib.DebugModule
 Compiling module xil_defaultlib.x28fxxxp30(FILENAME_MEM="/tmp/ke...
-Compiling module xil_defaultlib.MOVZController
+Compiling module xil_defaultlib.BranchSelector
 Compiling module xil_defaultlib.tb
 Compiling module xil_defaultlib.glbl
 Built simulation snapshot tb_func_synth

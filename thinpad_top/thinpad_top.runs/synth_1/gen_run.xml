@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7a100tfgg676-2L" LaunchTime="1543648114">
-  <File Type="PA-TCL" Name="MOVZController.tcl"/>
-  <File Type="RDS-PROPCONSTRS" Name="MOVZController_drc_synth.rpt"/>
-  <File Type="REPORTS-TCL" Name="MOVZController_reports.tcl"/>
-  <File Type="RDS-RDS" Name="MOVZController.vds"/>
-  <File Type="RDS-UTIL" Name="MOVZController_utilization_synth.rpt"/>
-  <File Type="RDS-UTIL-PB" Name="MOVZController_utilization_synth.pb"/>
-  <File Type="RDS-DCP" Name="MOVZController.dcp"/>
-  <File Type="VDS-TIMINGSUMMARY" Name="MOVZController_timing_summary_synth.rpt"/>
-  <File Type="VDS-TIMING-PB" Name="MOVZController_timing_summary_synth.pb"/>
+<GenRun Id="synth_1" LaunchPart="xc7a100tfgg676-2L" LaunchTime="1543670386">
+  <File Type="PA-TCL" Name="BranchSelector.tcl"/>
+  <File Type="RDS-PROPCONSTRS" Name="BranchSelector_drc_synth.rpt"/>
+  <File Type="REPORTS-TCL" Name="BranchSelector_reports.tcl"/>
+  <File Type="RDS-RDS" Name="BranchSelector.vds"/>
+  <File Type="RDS-UTIL" Name="BranchSelector_utilization_synth.rpt"/>
+  <File Type="RDS-UTIL-PB" Name="BranchSelector_utilization_synth.pb"/>
+  <File Type="RDS-DCP" Name="BranchSelector.dcp"/>
+  <File Type="VDS-TIMINGSUMMARY" Name="BranchSelector_timing_summary_synth.rpt"/>
+  <File Type="VDS-TIMING-PB" Name="BranchSelector_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1">
     <Filter Type="Srcs"/>
     <File Path="$PSRCDIR/sources_1/new/SEG7_LUT.v">
@@ -102,9 +102,37 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
+    <File Path="$PSRCDIR/sources_1/new/BranchSelector.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/Adder32.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/Selector32_4to1.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/Extender.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
     <Config>
       <Option Name="DesignMode" Val="RTL"/>
-      <Option Name="TopModule" Val="MOVZController"/>
+      <Option Name="TopModule" Val="BranchSelector"/>
     </Config>
   </FileSet>
   <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1">

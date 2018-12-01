@@ -25,7 +25,7 @@ module BranchSelector(
 	input wire[31:0] EXRegA,
 	input wire[31:0] EXRegB,
 
-	output reg BranchSelect,//00:PC+4 01:PC+4+Æ«ÒÆÁ¿ 10£ºPC=RegA(JR) 11£º(J)
+	output reg [1:0]BranchSelect,//00:PC+4 01:PC+4+offset 10:PC=RegA(JR) 11:PC=imm(J)
 	output reg BranchHappen
     );
 

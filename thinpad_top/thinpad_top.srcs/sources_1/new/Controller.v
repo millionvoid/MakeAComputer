@@ -34,7 +34,7 @@ module Controller(
 	output reg[5:0] RegDest,
 	output reg ALUSrc,
 	output reg MemToReg,
-	output reg MemReadSelect,
+	output reg [1:0]MemReadSelect,
 	output reg MemWriteSelect,
 	output reg IsMOVZ,
 	output reg[3:0] ALUOp
