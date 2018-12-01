@@ -207,6 +207,7 @@ end
 //reg [31:0]ReadDataA;
 //reg [31:0]ReadDataB;
 
+//--------------------RegisterFile test------------------------
 //initial begin
 //    RegWrite=1;
 //    clk=0;
@@ -235,23 +236,28 @@ end
 //    .ReadDataA(ReadDataA),
 //    .ReadDataB(ReadDataB)
 //);
-reg [31:0]EXOutput;
-reg IDEXIsMOVZ;
-reg IDEXRegWrite;
-reg EXRegWrite;
-initial begin
-    IDEXRegWrite=1;
-    IDEXIsMOVZ=0;
-    EXOutput=35;
-    #1 IDEXRegWrite=0;
-    #1 IDEXRegWrite=1;
-    #1 IDEXIsMOVZ=1;
-    #1 EXOutput=0;
-end
-MOVZController MOVZController_c(
-    .EXResult(EXOutput),
-    .IsMOVZ(IDEXIsMOVZ),
-    .OldRegWrite(IDEXRegWrite),
-    .NewRegWrite(EXRegWrite)
-);
+//--------------------RegisterFile test------------------------
+
+//--------------------MOVZController test------------------------
+//reg [31:0]EXOutput;
+//reg IDEXIsMOVZ;
+//reg IDEXRegWrite;
+//reg EXRegWrite;
+//initial begin
+//    IDEXRegWrite=1;
+//    IDEXIsMOVZ=0;
+//    EXOutput=35;
+//    #1 IDEXRegWrite=0;
+//    #1 IDEXRegWrite=1;
+//    #1 IDEXIsMOVZ=1;
+//    #1 EXOutput=0;
+//end
+//MOVZController MOVZController_c(
+//    .EXResult(EXOutput),
+//    .IsMOVZ(IDEXIsMOVZ),
+//    .OldRegWrite(IDEXRegWrite),
+//    .NewRegWrite(EXRegWrite)
+//);
+//--------------------MOVZController test------------------------
+
 endmodule
