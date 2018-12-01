@@ -80,7 +80,7 @@ RegPC RegPC_c(
     
     .PCOutput(RegPC)
 );
- assign InstAddress=RegPC;
+assign InstAddress=RegPC;
  //TODO: Adder32
 wire [31:0]IFNPC;
 Adder32 PCAdder(
