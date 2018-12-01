@@ -197,42 +197,61 @@ initial begin
     end
 end
 
-reg clk;
-reg [5:0]ReadRegA;
-reg [5:0]ReadRegB;
-reg [31:0]NPCInput;
-reg [5:0]WriteReg;
-reg [31:0]WriteData;
-reg RegWrite;
-reg [31:0]ReadDataA;
-reg [31:0]ReadDataB;
+//reg clk;
+//reg [5:0]ReadRegA;
+//reg [5:0]ReadRegB;
+//reg [31:0]NPCInput;
+//reg [5:0]WriteReg;
+//reg [31:0]WriteData;
+//reg RegWrite;
+//reg [31:0]ReadDataA;
+//reg [31:0]ReadDataB;
 
-initial begin
-    RegWrite=1;
-    clk=0;
-    forever #1 clk= ~ clk;
-end
-initial begin
-    #10 WriteReg=23;
-    WriteData=46;
-    #10 WriteReg=3;
-    WriteData=6;
-    ReadRegA=23;
-    #10 WriteReg=0;
-    WriteData=5;
-    ReadRegA=3;
-    #10 ReadRegA=0;                                       
-end
+//initial begin
+//    RegWrite=1;
+//    clk=0;
+//    forever #1 clk= ~ clk;
+//end
+//initial begin
+//    #10 WriteReg=23;
+//    WriteData=46;
+//    #10 WriteReg=3;
+//    WriteData=6;
+//    ReadRegA=23;
+//    #10 WriteReg=0;
+//    WriteData=5;
+//    ReadRegA=3;
+//    #10 ReadRegA=0;                                       
+//end
 
-RegisterFile c(
-    .clk(clk),
-    .ReadRegA(ReadRegA),
-    .ReadRegB(ReadRegB),
-    .NPCInput(NPCInput),
-    .WriteReg(WriteReg),
-    .WriteData(WriteData),
-    .RegWrite(RegWrite),
-    .ReadDataA(ReadDataA),
-    .ReadDataB(ReadDataB)
+//RegisterFile c(
+//    .clk(clk),
+//    .ReadRegA(ReadRegA),
+//    .ReadRegB(ReadRegB),
+//    .NPCInput(NPCInput),
+//    .WriteReg(WriteReg),
+//    .WriteData(WriteData),
+//    .RegWrite(RegWrite),
+//    .ReadDataA(ReadDataA),
+//    .ReadDataB(ReadDataB)
+//);
+reg [31:0]EXOutput;
+reg IDEXIsMOVZ;
+reg IDEXRegWrite;
+reg EXRegWrite;
+initial begin
+    IDEXRegWrite=1;
+    IDEXIsMOVZ=0;
+    EXOutput=35;
+    #1 IDEXRegWrite=0;
+    #1 IDEXRegWrite=1;
+    #1 IDEXIsMOVZ=1;
+    #1 EXOutput=0;
+end
+MOVZController MOVZController_c(
+    .EXResult(EXOutput),
+    .IsMOVZ(IDEXIsMOVZ),
+    .OldRegWrite(IDEXRegWrite),
+    .NewRegWrite(EXRegWrite)
 );
 endmodule
