@@ -26,11 +26,11 @@ module RegPC(
     input wire clr,
     input wire writeEN,
    
-    input wire PCInput,
-    output wire PCOutput
+    input wire [31:0]PCInput,
+    output wire [31:0]PCOutput
     );
 
-reg PC;
+reg [31:0]PC;
 
 assign PCOutput=PC;
 

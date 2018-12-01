@@ -88,7 +88,7 @@ wire[31:0] MemReadData;
 wire[31:0] MemWriteData;
 wire MemReadEN;
 wire MemWriteEN;
-wire MemReadSelect;
+wire [1:0]MemReadSelect;
 wire MemWriteSelect;
 
 CPU CPU_c(
