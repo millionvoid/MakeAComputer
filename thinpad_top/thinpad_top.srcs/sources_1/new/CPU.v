@@ -3,15 +3,24 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2018/11/30 04:01:06
+// Create Date: 2018/11/30 06:16:58
 // Design Name: 
 // Module Name: CPU
-// Project Name: MIPS32 Computer
+// Project Name: 
 // Target Devices: 
 // Tool Versions: 
 // Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
 //////////////////////////////////////////////////////////////////////////////////
- module CPU(
+
+
+module CPU(
     input wire clk,
     input wire rst,
     output wire[31:0] InstAddress,
@@ -57,8 +66,10 @@ wire[1:0] IDEXBranchType;
 wire[1:0] IDEXJumpType;
 wire[1:0] IDEXMemReadSelect;
 wire IDEXMemWriteSelect;
+
 wire IDEXRegWrite;
 wire IDEXMemToReg;
+
 wire IDEXIsMOVZ;
 
 //EX-MEM
@@ -72,6 +83,7 @@ wire[1:0] EXMEMBranchType;
 wire[1:0] EXMEMJumpType;
 wire[1:0] EXMEMMemReadSelect;
 wire EXMEMMemWriteSelect;
+
 wire EXMEMRegWrite;
 wire EXMEMMemToReg;
 
@@ -133,10 +145,12 @@ RegIFID RegIFID_c(
 
 //TODO:Extender
 wire[31:0] IDExtendImm;
+
 Extender Extender_c(
     .Instruction(IFIDInstruction),
     .ExtendImm(IDExtendImm)
 );
+
 
 //TODO:Controller
 wire[1:0] IDEXResultSelect;
@@ -154,18 +168,6 @@ wire[1:0] IDMemReadSelect;
 wire IDMemWriteSelect;
 wire IDIsMOVZ;
 wire[3:0] IDALUOp;
-
-assign LED= (SW==0) ? IDALUOp:
-            (SW==1) ? IDRegSrcA:
-            (SW==2) ? IDRegSrcB:
-            (SW==3) ? IDRegDest:
-            (SW==4) ? IDJumpType:
-            (SW==5) ? {IDRegWrite,IDMemToReg,IDMemRead,IDMemWrite}:
-            (SW==6) ? {IDALUSrc,IDIsMOVZ,IDMemWriteSelect,IDMemReadSelect}:
-            (SW==7) ? IFIDInstruction[15:0]:
-            (SW==8) ? IFIDInstruction[31:16]:
-            (SW==9) ? InstInput[15:0]:
-            InstInput[31:16];
 
 Controller Controller_c(
     .Instruction(IFIDInstruction),
@@ -186,11 +188,12 @@ Controller Controller_c(
     .ALUOp(IDALUOp)
 );
 
+
 //TODO:RegisterFile
 wire[31:0] IDRegDataA;
 wire[31:0] IDRegDataB;
 wire[31:0] WBWriteData; //WriteBack
-/*
+
 RegisterFile RegisterFile_c(
     //input
     .ReadRegA(IDRegSrcA),
@@ -206,6 +209,25 @@ RegisterFile RegisterFile_c(
     .WriteReg(MEMWBRegDest),
     .WriteData(WBWriteData)
 );
+
+/*
+assign LED= (SW==0) ? IDALUOp:
+            (SW==1) ? IDRegSrcA:
+            (SW==2) ? IDRegSrcB:
+            (SW==3) ? IDRegDest:
+            (SW==4) ? {IDBranchType,IDJumpType}:
+            (SW==5) ? {IDRegWrite,IDMemToReg,IDMemRead,IDMemWrite}:
+            (SW==6) ? {IDALUSrc,IDIsMOVZ,IDMemWriteSelect,IDMemReadSelect}:
+            (SW==7) ? IFIDInstruction[15:0]:
+            (SW==8) ? IFIDInstruction[31:16]:
+            (SW==9) ? InstInput[15:0]:
+            (SW==10) ? InstInput[31:16]:
+            (SW==11) ? IDExtendImm[15:0]:
+            (SW==12) ? IDExtendImm[31:16]:
+            (SW==13) ? IDRegDataA[15:0]:
+            (SW==14) ? IDRegDataA[31:16]:
+            (SW==15) ? IDRegDataB[15:0]:
+            IDRegDataB[31:16];
 */
 
 //HazardUnit
@@ -222,7 +244,9 @@ HazardUnit HazardUnit_c(
 
 wire IDEXclr;
 wire IDEXwriteEN;
-/*
+assign IDEXclr=0;
+assign IDEXwriteEN=1;
+
 RegIDEX RegIDEX_c(
     .clk(clk),
     .rst(rst),
@@ -283,11 +307,30 @@ RegIDEX RegIDEX_c(
     
     .IsMOVZOutput(IDEXIsMOVZ)
 );
-*/
+
+assign LED= (SW==0) ? IDEXALUOp:
+            (SW==1) ? IDEXRegSrcA:
+            (SW==2) ? IDEXRegSrcB:
+            (SW==3) ? IDEXRegDest:
+            (SW==4) ? {IDEXBranchType,IDEXJumpType}:
+            (SW==5) ? {IDEXRegWrite,IDEXMemToReg,IDEXMemRead,IDEXMemWrite}:
+            (SW==6) ? {IDEXALUSrc,IDEXIsMOVZ,IDEXMemWriteSelect,IDEXMemReadSelect}:
+            
+            (SW==7) ? IFIDInstruction[15:0]:
+            (SW==8) ? IFIDInstruction[31:16]:
+            (SW==9) ? InstInput[15:0]:
+            (SW==10) ? InstInput[31:16]:
+            
+            (SW==11) ? IDEXExtendImm[15:0]:
+            (SW==12) ? IDEXExtendImm[31:16]:
+            (SW==13) ? IDEXRegDataA[15:0]:
+            (SW==14) ? IDEXRegDataA[31:16]:
+            (SW==15) ? IDEXRegDataB[15:0]:
+            IDEXRegDataB[31:16];
 
 //ForwardUnit
-wire[1:0] EXForwardA;
-wire[1:0] EXForwardB;
+wire EXForwardA;
+wire EXForwardB;
 /*
 ForwardUnit ForwardUnit_c(
     // input
@@ -355,7 +398,6 @@ Selector32_4to1 EXEXResultSelector(
     .InputA(EXOutput),
     .InputB(EXRegA),
     .InputC(EXInputB),
-    .InputD(4'b0),
     .Control(IDEXEXResultSelect),
     .Output(EXEXResult)
 );
@@ -383,7 +425,7 @@ Adder32 BranchPCAdder(
 */
 
 //BranchSelector
-wire[1:0] EXBranchSelect;
+wire EXBranchSelect;
 wire EXBranchHappen;
 /*
 BranchSelector BranchSelector_c(
@@ -458,6 +500,7 @@ assign MemReadEN=0;
 assign MemWriteEN=0;
 assign MemReadSelect=EXMEMMemReadSelect;
 assign MemWriteSelect=EXMEMMemWriteSelect;
+
 wire MEMWBclr;
 wire MEMWBwriteEN;
 /*

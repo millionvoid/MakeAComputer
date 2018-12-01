@@ -26,26 +26,26 @@ module RegIDEX(
     input wire clr,
     input wire writeEN,
     
-    input wire NPCInput,
+    input wire[31:0] NPCInput,
     
-    input wire RegSrcAInput,
-    input wire RegSrcBInput,
-    input wire RegDestInput,
+    input wire[5:0] RegSrcAInput,
+    input wire[5:0] RegSrcBInput,
+    input wire[5:0] RegDestInput,
     
-    input wire RegDataAInput,
-    input wire RegDataBInput,
+    input wire[31:0] RegDataAInput,
+    input wire[31:0] RegDataBInput,
     
-    input wire ExtendImmInput,
+    input wire[31:0] ExtendImmInput,
     
-    input wire ALUOpInput,
+    input wire[3:0] ALUOpInput,
     input wire ALUSrcInput,
-    input wire EXResultSelectInput,
+    input wire[1:0] EXResultSelectInput,
     
     input wire MemReadInput,
     input wire MemWriteInput,
-    input wire BranchTypeInput,
-    input wire JumpTypeInput,
-    input wire MemReadSelectInput,
+    input wire[1:0] BranchTypeInput,
+    input wire[1:0] JumpTypeInput,
+    input wire[1:0] MemReadSelectInput,
     input wire MemWriteSelectInput,
     
     input wire RegWriteInput,
@@ -53,26 +53,26 @@ module RegIDEX(
     
     input wire IsMOVZInput,
     
-    output wire NPCOutput,
+    output wire[31:0] NPCOutput,
         
-    output wire RegSrcAOutput,
-    output wire RegSrcBOutput,
-    output wire RegDestOutput,
+    output wire[5:0] RegSrcAOutput,
+    output wire[5:0] RegSrcBOutput,
+    output wire[5:0] RegDestOutput,
     
-    output wire RegDataAOutput,
-    output wire RegDataBOutput,
+    output wire[31:0] RegDataAOutput,
+    output wire[31:0] RegDataBOutput,
     
-    output wire ExtendImmOutput,
+    output wire[31:0] ExtendImmOutput,
     
-    output wire ALUOpOutput,
+    output wire[3:0] ALUOpOutput,
     output wire ALUSrcOutput,
-    output wire EXResultSelectOutput,
+    output wire[1:0] EXResultSelectOutput,
     
     output wire MemReadOutput,
     output wire MemWriteOutput,
-    output wire BranchTypeOutput,
-    output wire JumpTypeOutput,
-    output wire MemReadSelectOutput,
+    output wire[1:0] BranchTypeOutput,
+    output wire[1:0] JumpTypeOutput,
+    output wire[1:0] MemReadSelectOutput,
     output wire MemWriteSelectOutput,
     
     output wire RegWriteOutput,
@@ -81,26 +81,26 @@ module RegIDEX(
     output wire IsMOVZOutput
     );
     
-reg NPC;
+reg[31:0] NPC;
 
-reg RegSrcA;
-reg RegSrcB;
-reg RegDest;
+reg[5:0] RegSrcA;
+reg[5:0] RegSrcB;
+reg[5:0] RegDest;
 
-reg RegDataA;
-reg RegDataB;
+reg[31:0] RegDataA;
+reg[31:0] RegDataB;
 
-reg ExtendImm;
+reg[31:0] ExtendImm;
 
-reg ALUOp;
+reg[3:0] ALUOp;
 reg ALUSrc;
-reg EXResultSelect;
+reg[1:0] EXResultSelect;
 
 reg MemRead;
 reg MemWrite;
-reg BranchType;
-reg JumpType;
-reg MemReadSelect;
+reg[1:0] BranchType;
+reg[1:0] JumpType;
+reg[1:0] MemReadSelect;
 reg MemWriteSelect;
 
 reg RegWrite;
