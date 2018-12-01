@@ -3,11 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2018/11/30 06:16:58
+// Create Date: 2018/11/30 04:01:06
 // Design Name: 
 // Module Name: CPU
-// Project Name: 
-// Module Name: Controller
 // Project Name: MIPS32 Computer
 // Target Devices: 
 // Tool Versions: 
