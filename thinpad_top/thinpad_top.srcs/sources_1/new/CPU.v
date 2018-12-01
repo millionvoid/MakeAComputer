@@ -7,20 +7,13 @@
 // Design Name: 
 // Module Name: CPU
 // Project Name: 
+// Module Name: Controller
+// Project Name: MIPS32 Computer
 // Target Devices: 
 // Tool Versions: 
 // Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
 //////////////////////////////////////////////////////////////////////////////////
-
-
-module CPU(
+ module CPU(
     input wire clk,
     input wire rst,
     output wire[31:0] InstAddress,
@@ -33,68 +26,51 @@ module CPU(
     output wire MemReadSelect,
     output wire MemWriteSelect
     );
-
-//Before IF
+ //Before IF
 wire RegPC;
-
-//IF-ID
+ //IF-ID
 wire IFIDNPC;
 wire IFIDInstruction;
-
-//ID-EX
+ //ID-EX
 wire IDEXNPC;
-
-wire IDEXRegSrcA;
+ wire IDEXRegSrcA;
 wire IDEXRegSrcB;
 wire IDEXRegDest;
-
-wire IDEXRegDataA;
+ wire IDEXRegDataA;
 wire IDEXRegDataB;
-
-wire IDEXExtendImm;
-
-wire IDEXALUOp;
+ wire IDEXExtendImm;
+ wire IDEXALUOp;
 wire IDEXALUSrc;
 wire IDEXEXResultSelect;
-
-wire IDEXMemRead;
+ wire IDEXMemRead;
 wire IDEXMemWrite;
 wire IDEXBranchType;
 wire IDEXJumpType;
 wire IDEXMemReadSelect;
 wire IDEXMemWriteSelect;
-
-wire IDEXRegWrite;
+ wire IDEXRegWrite;
 wire IDEXMemToReg;
-
-wire IDEXIsMOVZ;
-
-//EX-MEM
+ wire IDEXIsMOVZ;
+ //EX-MEM
 wire EXMEMEXResult;
 wire EXMEMRegDest;
 wire EXMEMRegDataB;
-
-wire EXMEMMemRead;
+ wire EXMEMMemRead;
 wire EXMEMMemWrite;
 wire EXMEMBranchType;
 wire EXMEMJumpType;
 wire EXMEMMemReadSelect;
 wire EXMEMMemWriteSelect;
-
-wire EXMEMRegWrite;
+ wire EXMEMRegWrite;
 wire EXMEMMemToReg;
-
-//MEM-WB
+ //MEM-WB
 wire MEMWBMemReadData;
 wire MEMWBEXResult;
 wire MEMWBRegDest;
-
-wire MEMWBRegWrite;
+ wire MEMWBRegWrite;
 wire MEMWBMemToReg;
-
-wire NewPC;
-
-wire PCclr;
+ wire NewPC;
+ wire PCclr;
 wire PCwriteEN;
 RegPC RegPC_c(
     .clk(clk),
@@ -106,18 +82,15 @@ RegPC RegPC_c(
     
     .PCOutput(RegPC)
 );
-
-assign InstAddress=RegPC;
-
-//TODO: Adder32
+ assign InstAddress=RegPC;
+ //TODO: Adder32
 wire IFNPC;
 Adder32 PCAdder(
     .InputA(RegPC),
     .InputB(4),
     .Output(IFNPC)
 );
-
-wire IFIDclr;
+ wire IFIDclr;
 wire IFIDwriteEN;
 RegIFID RegIFID_c(
     .clk(clk),
@@ -131,15 +104,13 @@ RegIFID RegIFID_c(
     .NPCOutput(IFIDNPC),
     .InstructionOutput(IFIDInstruction)
 );
-
-//TODO:Extender
+ //TODO:Extender
 wire IDExtendImm;
 Extender Extender_c(
     .Instruction(IFIDInstruction),
     .ExtendImm(IDExtendImm)
 );
-
-//TODO:Controller
+ //TODO:Controller
 wire IDEXResultSelect;
 wire IDRegWrite;
 wire IDMemRead;
@@ -173,8 +144,7 @@ Controller Controller_c(
     .IsMOVZ(IDIsMOVZ),
     .ALUOp(IDALUOp)
 );
-
-//TODO:RegisterFile
+ //TODO:RegisterFile
 wire IDRegDataA;
 wire IDRegDataB;
 wire WBWriteData; //WriteBack
@@ -192,8 +162,7 @@ RegisterFile RegisterFile_c(
     .WriteReg(MEMWBRegDest),
     .WriteData(WBWriteData)
 );
-
-//HazardUnit
+ //HazardUnit
 wire IDHazardHappen;
 HazardUnit HazardUnit_c(
     .IDEXMemRead(IDEXMemRead),
@@ -202,8 +171,7 @@ HazardUnit HazardUnit_c(
     .IDRegSrcB(IDRegSrcB),
     .HazardHappen(IDHazardHappen)
 );
-
-wire IDEXclr;
+ wire IDEXclr;
 wire IDEXwriteEN;
 RegIDEX RegIDEX_c(
     .clk(clk),
@@ -265,8 +233,7 @@ RegIDEX RegIDEX_c(
     
     .IsMOVZOutput(IDEXIsMOVZ)
 );
-
-//ForwardUnit
+ //ForwardUnit
 wire EXForwardA;
 wire EXForwardB;
 ForwardUnit ForwardUnit_c(
@@ -282,8 +249,7 @@ ForwardUnit ForwardUnit_c(
     .ForwardA(EXForwardA),
     .ForwardB(EXForwardB)
 );
-
-//Select RegA and RegB
+ //Select RegA and RegB
 wire EXRegA;
 wire EXRegB;
 Selector32_4to1 EXRegASelector(
@@ -302,8 +268,7 @@ Selector32_4to1 EXRegBSelector(
     .Control(EXForwardB),
     .Output(EXRegB)
 );
-
-//Select ALUSrc
+ //Select ALUSrc
 wire EXInputB;
 Selector32_2to1 EXInputBSelector(
     .InputA(EXRegB),
@@ -311,8 +276,7 @@ Selector32_2to1 EXInputBSelector(
     .Control(IDEXALUSrc),
     .Output(EXInputB)
 );
-
-//ALU
+ //ALU
 wire EXOutput;
 ALU ALU_c(
     .ALUOp(IDEXALUOp),
@@ -320,8 +284,7 @@ ALU ALU_c(
     .InputB(EXInputB),
     .Output(EXOutput)
 );
-
-//Select EXResult
+ //Select EXResult
 wire EXEXResult;
 Selector32_4to1 EXEXResultSelector(
     .InputA(EXOutput),
@@ -330,8 +293,7 @@ Selector32_4to1 EXEXResultSelector(
     .Control(IDEXEXResultSelect),
     .Output(EXEXResult)
 );
-
-//MOVZController
+ //MOVZController
 wire EXRegWrite;
 MOVZController MOVZController_c(
     .EXResult(EXOutput),
@@ -339,16 +301,14 @@ MOVZController MOVZController_c(
     .OldRegWrite(IDEXRegWrite),
     .NewRegWrite(EXRegWrite)
 );
-
-//Calculate BranchPC
+ //Calculate BranchPC
 wire EXBranchPC;
 Adder32 BranchPCAdder(
     .InputA(IDEXNPC),
     .InputB(IDEXExtendImm),
     .Output(EXBranchPC)
 );
-
-//BranchSelector
+ //BranchSelector
 wire EXBranchSelect;
 wire EXBranchHappen;
 BranchSelector BranchSelector_c(
@@ -362,8 +322,7 @@ BranchSelector BranchSelector_c(
     .BranchSelect(EXBranchSelect),
     .BranchHappen(EXBranchHappen)
 );
-
-//Select NewPC
+ //Select NewPC
 Selector32_4to1 NewPCSelector(
     .InputA(IDEXNPC),
     .InputB(EXBranchPC),
@@ -372,8 +331,7 @@ Selector32_4to1 NewPCSelector(
     .Control(EXBranchSelect),
     .Output(NewPC)
 );
-
-wire EXMEMclr;
+ wire EXMEMclr;
 wire EXMEMwriteEN;
 RegEXMEM RegEXMEM_c(
     .clk(clk),
@@ -409,15 +367,13 @@ RegEXMEM RegEXMEM_c(
     .RegWriteOutput(EXMEMRegWrite),
     .MemToRegOutput(EXMEMMemToReg)
 );
-
-assign MemAddress=EXMEMEXResult;
+ assign MemAddress=EXMEMEXResult;
 assign MemWriteData=EXMEMRegDataB;
 assign MemReadEN=EXMEMMemRead;
 assign MemWriteEN=EXMEMMemWrite;
 assign MemReadSelect=EXMEMMemReadSelect;
 assign MemWriteSelect=EXMEMMemWriteSelect;
-
-wire MEMWBclr;
+ wire MEMWBclr;
 wire MEMWBwriteEN;
 RegMEMWB RegMEMWB_c(
     .clk(clk),
@@ -439,16 +395,14 @@ RegMEMWB RegMEMWB_c(
     .RegWriteOutput(MEMWBRegWrite),
     .MemToRegOutput(MEMWBMemToReg)
 );
-
-//Select WriteData
+ //Select WriteData
 Selector32_2to1 WBWriteDataSelector(
     .InputA(MEMWBEXResult),
     .InputB(MEMWBMemReadData),
     .Control(MEMWBMemToReg),
     .Output(WBWriteData)
 );
-
-//StallUnit
+ //StallUnit
 StallUnit StallUnit_c(
     .BranchHappen(EXBranchHappen),
     .HazardHappen(IDHazardHappen),
