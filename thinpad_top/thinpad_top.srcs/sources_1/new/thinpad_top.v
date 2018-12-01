@@ -104,12 +104,14 @@ CPU CPU_c(
     .MemReadSelect(MemReadSelect),
     .MemWriteSelect(MemWriteSelect),
     
-    .SW(dip_sw)
-    //.LED(leds)
+    .SW(dip_sw),
+    .LED(leds)
 );
 
+assign dpy0[7]=CPUclk;
+
 Memory memory_c(
-    .LEDOut(leds),
+    //.LEDOut(leds),
 
     .uart_rdn(uart_rdn),
     .uart_wrn(uart_wrn),

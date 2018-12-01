@@ -69,18 +69,21 @@ module Ctrl_SRAM_UART(
  assign ext_ram_WE=ext_WE;
  
  reg[31:0] res;
- assign out[7:0]=res[7:0];
+ //assign out[7:0]=res[7:0];
  
  reg[3:0] state;
  
  reg success;
  assign succ=success;
- 
+ /*
  assign out[11:8]=state;
  assign out[13:12]=mode;
  assign out[15]=uart_r_ok;
  assign out[14]=uart_w_ok;
  assign out[31:16]=res[31:16];
+ */
+ 
+ assign out=res;
  
  assign uart_r_ok=uart_dataready;
  assign uart_w_ok=uart_tsre & uart_tbre;

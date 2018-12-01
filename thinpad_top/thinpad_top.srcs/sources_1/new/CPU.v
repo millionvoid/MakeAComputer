@@ -44,8 +44,6 @@ wire[31:0] PC;
 wire[31:0] IFIDNPC;
 wire[31:0] IFIDInstruction;
 
-assign LED=SW[0] ? IFIDInstruction[15:0] : IFIDInstruction[31:16];
-
 //ID-EX
 wire[31:0] IDEXNPC;
 
@@ -129,6 +127,8 @@ assign NewPC=IFNPC;
 
 wire IFIDclr;
 wire IFIDwriteEN;
+assign IFIDclr=0;
+assign IFIDwriteEN=1;
 
 RegIFID RegIFID_c(
     .clk(clk),
@@ -168,10 +168,22 @@ wire[1:0] IDMemReadSelect;
 wire IDMemWriteSelect;
 wire IDIsMOVZ;
 wire[3:0] IDALUOp;
-/*
+
+assign LED= (SW==0) ? IDALUOp:
+            (SW==1) ? IDRegSrcA:
+            (SW==2) ? IDRegSrcB:
+            (SW==3) ? IDRegDest:
+            (SW==4) ? IDJumpType:
+            (SW==5) ? {IDRegWrite,IDMemToReg,IDMemRead,IDMemWrite}:
+            (SW==6) ? {IDALUSrc,IDIsMOVZ,IDMemWriteSelect,IDMemReadSelect}:
+            (SW==7) ? IFIDInstruction[15:0]:
+            (SW==8) ? IFIDInstruction[31:16]:
+            (SW==9) ? InstInput[15:0]:
+            InstInput[31:16];
+
 Controller Controller_c(
     .Instruction(IFIDInstruction),
-    .EXResultSelect(IDEXResultSelect),
+    .ExResultSelect(IDEXResultSelect),
     .RegWrite(IDRegWrite),
     .MemRead(IDMemRead),
     .MemWrite(IDMemWrite),
@@ -187,7 +199,7 @@ Controller Controller_c(
     .IsMOVZ(IDIsMOVZ),
     .ALUOp(IDALUOp)
 );
-*/
+
 
 //TODO:RegisterFile
 wire[31:0] IDRegDataA;

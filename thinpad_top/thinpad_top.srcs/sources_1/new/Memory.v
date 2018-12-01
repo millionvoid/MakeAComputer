@@ -80,7 +80,7 @@ reg[3:0] BE;
 assign ram_BE=BE;
 assign ext_ram_BE=BE;
 
-assign CPUclk = (state == 0);
+assign CPUclk = (state == 5);
 //assign LEDOut = {1'b0,mode,1'b0,state,BufferData1[7:0]};
 //assign LEDOut = BufferData1[31:16];
 assign LEDOut={CPUclk,InstAddress[14:0]};
@@ -93,7 +93,7 @@ always@(posedge clk or posedge rst) begin
             0:begin //pre
                 if (MemReadEN | MemWriteEN) begin
                     state <= 1;
-                end else begin
+                end else if (succ) begin
                     state <= 3;
                 end
             end
