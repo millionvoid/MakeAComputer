@@ -102,10 +102,17 @@ CPU CPU_c(
     .MemReadEN(MemReadEN),
     .MemWriteEN(MemWriteEN),
     .MemReadSelect(MemReadSelect),
-    .MemWriteSelect(MemWriteSelect)
+    .MemWriteSelect(MemWriteSelect),
+    
+    .SW(dip_sw),
+    .LED(leds)
 );
 
+assign dpy0[7]=CPUclk;
+
 Memory memory_c(
+    //.LEDOut(leds),
+
     .uart_rdn(uart_rdn),
     .uart_wrn(uart_wrn),
     .uart_dataready(uart_dataready),
@@ -126,7 +133,7 @@ Memory memory_c(
     .ext_ram_WE(ext_ram_we_n),
     .ext_ram_BE(ext_ram_be_n),
     
-    .clk(clk_50M),
+    .clk(clock_btn),
     .rst(reset_btn),
     .CPUclk(CPUclk),
     

@@ -25,7 +25,7 @@ module Memory(
     input wire rst,
     output wire CPUclk,
     input wire[31:0] SW,
-    output wire[31:0] LEDOut,
+    output wire[15:0] LEDOut,
     
     input wire[31:0] InstAddress,
     output wire[31:0] InstInput,
@@ -80,7 +80,10 @@ reg[3:0] BE;
 assign ram_BE=BE;
 assign ext_ram_BE=BE;
 
-assign CPUclk = (state == 0);
+assign CPUclk = (state == 5);
+//assign LEDOut = {1'b0,mode,1'b0,state,BufferData1[7:0]};
+//assign LEDOut = BufferData1[31:16];
+assign LEDOut={CPUclk,InstAddress[14:0]};
 
 always@(posedge clk or posedge rst) begin
     if (rst == 1) begin
@@ -90,7 +93,7 @@ always@(posedge clk or posedge rst) begin
             0:begin //pre
                 if (MemReadEN | MemWriteEN) begin
                     state <= 1;
-                end else begin
+                end else if (succ) begin
                     state <= 3;
                 end
             end
@@ -99,8 +102,12 @@ always@(posedge clk or posedge rst) begin
                     32'hBFD003F8:begin
                         mode <= {2'b0,MemReadEN};
                         in_data <= MemWriteData;
-                        ctrl <= succ;
-                        state <= 2;
+                        if (succ) begin
+                            ctrl <= succ;
+                        end else begin
+                            ctrl <= succ;
+                            state <= 2;
+                        end
                     end
                     32'hBFD003FC:begin
                         BufferData2 <= {30'b0,uart_r_ok,uart_w_ok};
@@ -132,8 +139,12 @@ always@(posedge clk or posedge rst) begin
                             BE <= 0;
                         end
                         in_addr <= MemAddress[21:2];
-                        ctrl <= succ;
-                        state <= 2;
+                        if (succ) begin
+                            ctrl <= succ;
+                        end else begin
+                            ctrl <= succ;
+                            state <= 2;
+                        end
                     end
                 endcase
             end
@@ -166,16 +177,23 @@ always@(posedge clk or posedge rst) begin
             3:begin //ins_start
                 mode <= {InstAddress[22],2'b11};
                 in_addr <= InstAddress[21:2];
-                ctrl <= succ;
-                state <= 4;
+                if (succ) begin
+                    ctrl <= succ;
+                end else begin
+                    ctrl <= succ;
+                    state <= 4;
+                end
             end
             4:begin //ins_wait
                 if (succ) begin
                     BufferData1 <= out_data;
-                    state <= 0;
+                    state <= 5;
                 end else begin
                     ctrl <= succ;
                 end
+            end
+            5:begin
+                state <= 0;
             end
             default:begin
                 state <= 0;

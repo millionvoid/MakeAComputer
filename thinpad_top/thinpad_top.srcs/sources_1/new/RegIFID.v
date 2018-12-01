@@ -26,15 +26,15 @@ module RegIFID(
     input wire clr,
     input wire writeEN,
     
-    input wire InstructionInput,
-    input wire NPCInput,
+    input wire[31:0] InstructionInput,
+    input wire[31:0] NPCInput,
     
-    output wire InstructionOutput,
-    output wire NPCOutput
+    output wire[31:0] InstructionOutput,
+    output wire[31:0] NPCOutput
     );
     
-reg NPC;
-reg Instruction;
+reg[31:0] NPC;
+reg[31:0] Instruction;
 
 assign NPCOutput=NPC;
 assign InstructionOutput=Instruction;

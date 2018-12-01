@@ -26,15 +26,15 @@ module RegPC(
     input wire clr,
     input wire writeEN,
    
-    input wire [31:0]PCInput,
-    output wire [31:0]PCOutput
+    input wire[31:0] PCInput,
+    output wire[31:0] PCOutput
     );
 
-reg [31:0]PC;
+reg[31:0] PC;
 
 assign PCOutput=PC;
 
-always@(posedge clk or posedge rst) begin
+always@(posedge clk or posedge rst) begin    
     if (rst) begin
         PC <= 0;
     end else begin

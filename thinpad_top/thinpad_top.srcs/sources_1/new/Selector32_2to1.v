@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: Jia Minglin
+// Engineer: 
 // 
-// Create Date: 2018/12/01 17:22:45
+// Create Date: 2018/11/30 19:43:11
 // Design Name: 
-// Module Name: Adder32
+// Module Name: Selector32_2to1
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,12 +19,11 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module Adder32(
-	input wire[31:0] InputA,
-	input wire[31:0] InputB,
-	output reg[31:0] Output
+
+module Selector32_2to1(
+    input wire InputA,
+    input wire InputB,
+    input wire Control,
+    output wire Output
     );
-always @(*) begin
-	Output<=InputB+InputA;
-end
 endmodule
