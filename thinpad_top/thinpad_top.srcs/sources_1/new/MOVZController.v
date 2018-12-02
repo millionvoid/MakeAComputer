@@ -28,7 +28,7 @@ module MOVZController(
 
 always @(*) begin
     if(IsMOVZ)begin
-        if (EXResult!=0) begin
+        if (EXResult==0) begin
             NewRegWrite=0;
         end
         else begin
