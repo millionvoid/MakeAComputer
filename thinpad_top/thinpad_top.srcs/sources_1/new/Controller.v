@@ -66,8 +66,16 @@ always@(*)begin
 				end
 				6'b000000://SLL
 				begin
-					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
-					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h8};
+					if(Instruction!=0)
+                        begin
+                            {ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+                            {2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h8};
+                        end
+                    else
+                        begin
+                            {ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
+                            {2'b00,1'b0,1'b0,1'b0,2'b0,2'b0, 1'b0,5'b0, 1'b0,5'b0, 1'b0,5'b0,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
+                        end
 				end
 				6'b000010://SRL
 				begin
@@ -129,7 +137,7 @@ always@(*)begin
 		6'b000011 ://JAL
 		begin
 			{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
-			{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,5'b0, 1'b0,5'b0, 1'b0,5'b0,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
+			{2'b11,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,5'b0, 1'b0,5'b0, 1'b0,5'b11111,1'b0,1'b0,2'b0,1'b0,1'b0,4'h0};
 		end
 		6'b100000 ://LB 
 		begin
