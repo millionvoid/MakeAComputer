@@ -36,7 +36,7 @@ always @(*) begin
 		0:ShouldBranch=0;
 		1:ShouldBranch=EXRegA==EXRegB?1:0;
 		2:ShouldBranch=EXRegA!=EXRegB?1:0;
-		3:ShouldBranch=EXRegA> EXRegB?1:0;
+		3:ShouldBranch=((EXRegA[31] == 0) && (EXRegA != 0)) ?1:0;
 	endcase
 end
 
