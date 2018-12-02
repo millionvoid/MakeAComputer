@@ -26,44 +26,44 @@ module RegEXMEM(
     input wire clr,
     input wire writeEN,
     
-    input wire EXResultInput,
-    input wire RegDestInput,
-    input wire RegDataBInput,
+    input wire[31:0] EXResultInput,
+    input wire[5:0] RegDestInput,
+    input wire[31:0] RegDataBInput,
     
     input wire MemReadInput,
     input wire MemWriteInput,
-    input wire BranchTypeInput,
-    input wire JumpTypeInput,
-    input wire MemReadSelectInput,
+    input wire[1:0] BranchTypeInput,
+    input wire[1:0] JumpTypeInput,
+    input wire[1:0] MemReadSelectInput,
     input wire MemWriteSelectInput,
     
     input wire RegWriteInput,
     input wire MemToRegInput,
     
-    output wire EXResultOutput,
-    output wire RegDestOutput,
-    output wire RegDataBOutput,
+    output wire[31:0] EXResultOutput,
+    output wire[5:0] RegDestOutput,
+    output wire[31:0] RegDataBOutput,
     
     output wire MemReadOutput,
     output wire MemWriteOutput,
-    output wire BranchTypeOutput,
-    output wire JumpTypeOutput,
-    output wire MemReadSelectOutput,
+    output wire[1:0] BranchTypeOutput,
+    output wire[1:0] JumpTypeOutput,
+    output wire[1:0] MemReadSelectOutput,
     output wire MemWriteSelectOutput,
     
     output wire RegWriteOutput,
     output wire MemToRegOutput
     );
 
-reg EXResult;
-reg RegDest;
-reg RegDataB;
+reg[31:0] EXResult;
+reg[5:0] RegDest;
+reg[31:0] RegDataB;
 
 reg MemRead;
 reg MemWrite;
-reg BranchType;
-reg JumpType;
-reg MemReadSelect;
+reg[1:0] BranchType;
+reg[1:0] JumpType;
+reg[1:0] MemReadSelect;
 reg MemWriteSelect;
 
 reg RegWrite;

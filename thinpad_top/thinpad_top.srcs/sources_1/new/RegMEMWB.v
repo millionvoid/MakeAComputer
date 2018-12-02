@@ -26,24 +26,24 @@ module RegMEMWB(
     input wire clr,
     input wire writeEN,
     
-    input wire MemReadDataInput,
-    input wire EXResultInput,
-    input wire RegDestInput,
+    input wire[31:0] MemReadDataInput,
+    input wire[31:0] EXResultInput,
+    input wire[5:0] RegDestInput,
     
     input wire RegWriteInput,
     input wire MemToRegInput,
     
-    output wire MemReadDataOutput,    
-    output wire EXResultOutput,
-    output wire RegDestOutput,
+    output wire[31:0] MemReadDataOutput,    
+    output wire[31:0] EXResultOutput,
+    output wire[5:0] RegDestOutput,
     
     output wire RegWriteOutput,
     output wire MemToRegOutput
     );
 
-reg MemReadData;
-reg EXResult;
-reg RegDest;
+reg[31:0] MemReadData;
+reg[31:0] EXResult;
+reg[5:0] RegDest;
 
 reg RegWrite;
 reg MemToReg;
