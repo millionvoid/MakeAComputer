@@ -1,2 +1,0 @@
-# MakeAComputer
-In four days.
