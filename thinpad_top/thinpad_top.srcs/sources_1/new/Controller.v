@@ -69,7 +69,7 @@ always@(*)begin
 					if(Instruction!=0)
                         begin
                             {ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
-                            {2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h8};
+                            {2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b1,1'b0,2'b0,1'b0,1'b0,4'h8};
                         end
                     else
                         begin
@@ -80,7 +80,7 @@ always@(*)begin
 				6'b000010://SRL
 				begin
 					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
-					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'h9};
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b1,1'b0,2'b0,1'b0,1'b0,4'h9};
 				end
 				6'b100110://XOR
 				begin
@@ -90,7 +90,7 @@ always@(*)begin
 				6'b000011://SRA
 				begin
 					{ExResultSelect,RegWrite,MemRead,MemWrite,BranchType[1:0],JumpType[1:0],RegSrcA[5:0],RegSrcB[5:0],RegDest[5:0],ALUSrc,MemToReg,MemReadSelect,MemWriteSelect,IsMOVZ,ALUOp[3:0]}=
-					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b0,1'b0,2'b0,1'b0,1'b0,4'ha};
+					{2'b00,1'b1,1'b0,1'b0,2'b0,2'b0, 1'b0,Instruction[20:16], 1'b0,Instruction[20:16], 1'b0,Instruction[15:11],1'b1,1'b0,2'b0,1'b0,1'b0,4'ha};
 				end
 				6'b100111://NOR
 				begin

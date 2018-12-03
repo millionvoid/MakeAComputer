@@ -212,25 +212,6 @@ RegisterFile RegisterFile_c(
     .WriteData(WBWriteData)
 );
 
-/*
-assign LED= (SW==0) ? IDALUOp:
-            (SW==1) ? IDRegSrcA:
-            (SW==2) ? IDRegSrcB:
-            (SW==3) ? IDRegDest:
-            (SW==4) ? {IDBranchType,IDJumpType}:
-            (SW==5) ? {IDRegWrite,IDMemToReg,IDMemRead,IDMemWrite}:
-            (SW==6) ? {IDALUSrc,IDIsMOVZ,IDMemWriteSelect,IDMemReadSelect}:
-            (SW==7) ? IFIDInstruction[15:0]:
-            (SW==8) ? IFIDInstruction[31:16]:
-            (SW==9) ? InstInput[15:0]:
-            (SW==10) ? InstInput[31:16]:
-            (SW==11) ? IDExtendImm[15:0]:
-            (SW==12) ? IDExtendImm[31:16]:
-            (SW==13) ? IDRegDataA[15:0]:
-            (SW==14) ? IDRegDataA[31:16]:
-            (SW==15) ? IDRegDataB[15:0]:
-            IDRegDataB[31:16];
-*/
 
 //HazardUnit
 wire IDHazardHappen;
@@ -436,34 +417,6 @@ Selector32_4to1 NewPCSelector(
 );
 
 
-/*
-assign LED= (SW==0) ? IDEXALUOp:
-            (SW==1) ? IDEXRegSrcA:
-            (SW==2) ? IDEXRegSrcB:
-            (SW==3) ? IDEXRegDest:
-            (SW==4) ? {IDEXBranchType,IDEXJumpType}:
-            (SW==5) ? {IDEXRegWrite,IDEXMemToReg,IDEXMemRead,IDEXMemWrite}:
-            (SW==6) ? {IDEXALUSrc,IDEXIsMOVZ,IDEXMemWriteSelect,IDEXMemReadSelect}:
-            
-            (SW==7) ? IFIDInstruction[15:0]:
-            (SW==8) ? IFIDInstruction[31:16]:
-            (SW==9) ? InstInput[15:0]:
-            (SW==10) ? InstInput[31:16]:
-            
-            (SW==11) ? IDEXExtendImm[15:0]:
-            (SW==12) ? IDEXExtendImm[31:16]:
-            (SW==13) ? IDEXRegDataA[15:0]:
-            (SW==14) ? IDEXRegDataA[31:16]:
-            (SW==15) ? IDEXRegDataB[15:0]:
-            (SW==16) ? IDEXRegDataB[31:16]:
-            (SW==17) ? EXRegA[15:0]:
-            (SW==18) ? EXRegA[31:16]:
-            (SW==19) ? EXRegA[15:0]:
-            (SW==20) ? EXRegB[31:16]:
-            (SW==21) ? EXInputB[15:0]:
-            EXInputB[31:16];
-*/
-
 wire EXMEMclr;
 wire EXMEMwriteEN;
 //assign EXMEMclr=0;
@@ -604,7 +557,7 @@ assign LED= (SW==0) ? IDALUOp:
             (SW==27) ? EXRegWrite:
             (SW==28) ? EXBranchPC[15:0]:
             (SW==29) ? EXBranchPC[31:16]:
-            (SW==30) ? {EXBranchSelect,EXBranchHappen,IDHazardHappen}:
+            (SW==30) ? {EXForwardA,EXForwardB,EXBranchSelect,EXBranchHappen,IDHazardHappen}:
             (SW==31) ? NewPC[15:0]:
             (SW==32) ? NewPC[31:16]:
             (SW==33) ? WBWriteData[15:0]:
