@@ -1,58 +1,58 @@
 `default_nettype none
 
 module thinpad_top(
-    input wire clk_50M,           //50MHz 时钟输入钟输入
-    input wire clk_11M0592,       //11.0592MHz 时钟输入
+    input wire clk_50M,           //50MHz 鏃堕挓杈撳叆閽熻緭鍏?
+    input wire clk_11M0592,       //11.0592MHz 鏃堕挓杈撳叆
 
-    input wire clock_btn,         //BTN5手动时钟按钮开关，带消抖电路，按下时为1
-    input wire reset_btn,         //BTN6手动复位按钮开关，带消抖电路，按下时为1
+    input wire clock_btn,         //BTN5鎵嬪姩鏃堕挓鎸夐挳寮?鍏筹紝甯︽秷鎶栫數璺紝鎸変笅鏃朵负1
+    input wire reset_btn,         //BTN6鎵嬪姩澶嶄綅鎸夐挳寮?鍏筹紝甯︽秷鎶栫數璺紝鎸変笅鏃朵负1
 
-    input  wire[3:0]  touch_btn,  //BTN1~BTN4，按钮开关，按下时为1
-    input  wire[31:0] dip_sw,     //32位拨码开关，拨到“ON”时为1
-    output wire[15:0] leds,       //16位LED，输出时1点亮
-    output wire[7:0]  dpy0,       //数码管低位信号，包括小数点，输出1点亮
-    output wire[7:0]  dpy1,       //数码管高位信号，包括小数点，输出1点亮
+    input  wire[3:0]  touch_btn,  //BTN1~BTN4锛屾寜閽紑鍏筹紝鎸変笅鏃朵负1
+    input  wire[31:0] dip_sw,     //32浣嶆嫧鐮佸紑鍏筹紝鎷ㄥ埌鈥淥N鈥濇椂涓?1
+    output wire[15:0] leds,       //16浣峀ED锛岃緭鍑烘椂1鐐逛寒
+    output wire[7:0]  dpy0,       //鏁扮爜绠′綆浣嶄俊鍙凤紝鍖呮嫭灏忔暟鐐癸紝杈撳嚭1鐐逛寒
+    output wire[7:0]  dpy1,       //鏁扮爜绠￠珮浣嶄俊鍙凤紝鍖呮嫭灏忔暟鐐癸紝杈撳嚭1鐐逛寒
 
-    //CPLD串口控制器信号
-    output wire uart_rdn,         //读串口信号，低有效
-    output wire uart_wrn,         //写串口信号，低有效
-    input wire uart_dataready,    //串口数据准备好
-    input wire uart_tbre,         //发送数据标志
-    input wire uart_tsre,         //数据发送完毕标志
+    //CPLD涓插彛鎺у埗鍣ㄤ俊鍙?
+    output wire uart_rdn,         //璇讳覆鍙ｄ俊鍙凤紝浣庢湁鏁?
+    output wire uart_wrn,         //鍐欎覆鍙ｄ俊鍙凤紝浣庢湁鏁?
+    input wire uart_dataready,    //涓插彛鏁版嵁鍑嗗濂?
+    input wire uart_tbre,         //鍙戦?佹暟鎹爣蹇?
+    input wire uart_tsre,         //鏁版嵁鍙戦?佸畬姣曟爣蹇?
 
-    //BaseRAM信号
-    inout wire[31:0] base_ram_data,  //BaseRAM数据，低8位与CPLD串口控制器共享
-    output wire[19:0] base_ram_addr, //BaseRAM地址
-    output wire[3:0] base_ram_be_n,  //BaseRAM字节使能，低有效。如果不使用字节使能，请保持为0
-    output wire base_ram_ce_n,       //BaseRAM片选，低有效
-    output wire base_ram_oe_n,       //BaseRAM读使能，低有效
-    output wire base_ram_we_n,       //BaseRAM写使能，低有效
+    //BaseRAM淇″彿
+    inout wire[31:0] base_ram_data,  //BaseRAM鏁版嵁锛屼綆8浣嶄笌CPLD涓插彛鎺у埗鍣ㄥ叡浜?
+    output wire[19:0] base_ram_addr, //BaseRAM鍦板潃
+    output wire[3:0] base_ram_be_n,  //BaseRAM瀛楄妭浣胯兘锛屼綆鏈夋晥銆傚鏋滀笉浣跨敤瀛楄妭浣胯兘锛岃淇濇寔涓?0
+    output wire base_ram_ce_n,       //BaseRAM鐗囬?夛紝浣庢湁鏁?
+    output wire base_ram_oe_n,       //BaseRAM璇讳娇鑳斤紝浣庢湁鏁?
+    output wire base_ram_we_n,       //BaseRAM鍐欎娇鑳斤紝浣庢湁鏁?
 
-    //ExtRAM信号
-    inout wire[31:0] ext_ram_data,  //ExtRAM数据
-    output wire[19:0] ext_ram_addr, //ExtRAM地址
-    output wire[3:0] ext_ram_be_n,  //ExtRAM字节使能，低有效。如果不使用字节使能，请保持为0
-    output wire ext_ram_ce_n,       //ExtRAM片选，低有效
-    output wire ext_ram_oe_n,       //ExtRAM读使能，低有效
-    output wire ext_ram_we_n,       //ExtRAM写使能，低有效
+    //ExtRAM淇″彿
+    inout wire[31:0] ext_ram_data,  //ExtRAM鏁版嵁
+    output wire[19:0] ext_ram_addr, //ExtRAM鍦板潃
+    output wire[3:0] ext_ram_be_n,  //ExtRAM瀛楄妭浣胯兘锛屼綆鏈夋晥銆傚鏋滀笉浣跨敤瀛楄妭浣胯兘锛岃淇濇寔涓?0
+    output wire ext_ram_ce_n,       //ExtRAM鐗囬?夛紝浣庢湁鏁?
+    output wire ext_ram_oe_n,       //ExtRAM璇讳娇鑳斤紝浣庢湁鏁?
+    output wire ext_ram_we_n,       //ExtRAM鍐欎娇鑳斤紝浣庢湁鏁?
 
-    //直连串口信号
-    output wire txd,  //直连串口发送端
-    input  wire rxd,  //直连串口接收端
+    //鐩磋繛涓插彛淇″彿
+    output wire txd,  //鐩磋繛涓插彛鍙戦?佺
+    input  wire rxd,  //鐩磋繛涓插彛鎺ユ敹绔?
 
-    //Flash存储器信号，参考 JS28F640 芯片手册
-    output wire [22:0]flash_a,      //Flash地址，a0仅在8bit模式有效，16bit模式无意义
-    inout  wire [15:0]flash_d,      //Flash数据
-    output wire flash_rp_n,         //Flash复位信号，低有效
-    output wire flash_vpen,         //Flash写保护信号，低电平时不能擦除、烧写
-    output wire flash_ce_n,         //Flash片选信号，低有效
-    output wire flash_oe_n,         //Flash读使能信号，低有效
-    output wire flash_we_n,         //Flash写使能信号，低有效
-    output wire flash_byte_n,       //Flash 8bit模式选择，低有效。在使用flash的16位模式时请设为1
+    //Flash瀛樺偍鍣ㄤ俊鍙凤紝鍙傝?? JS28F640 鑺墖鎵嬪唽
+    output wire [22:0]flash_a,      //Flash鍦板潃锛宎0浠呭湪8bit妯″紡鏈夋晥锛?16bit妯″紡鏃犳剰涔?
+    inout  wire [15:0]flash_d,      //Flash鏁版嵁
+    output wire flash_rp_n,         //Flash澶嶄綅淇″彿锛屼綆鏈夋晥
+    output wire flash_vpen,         //Flash鍐欎繚鎶や俊鍙凤紝浣庣數骞虫椂涓嶈兘鎿﹂櫎銆佺儳鍐?
+    output wire flash_ce_n,         //Flash鐗囬?変俊鍙凤紝浣庢湁鏁?
+    output wire flash_oe_n,         //Flash璇讳娇鑳戒俊鍙凤紝浣庢湁鏁?
+    output wire flash_we_n,         //Flash鍐欎娇鑳戒俊鍙凤紝浣庢湁鏁?
+    output wire flash_byte_n,       //Flash 8bit妯″紡閫夋嫨锛屼綆鏈夋晥銆傚湪浣跨敤flash鐨?16浣嶆ā寮忔椂璇疯涓?1
 
-    //USB 控制器信号，参考 SL811 芯片手册
+    //USB 鎺у埗鍣ㄤ俊鍙凤紝鍙傝?? SL811 鑺墖鎵嬪唽
     output wire sl811_a0,
-    //inout  wire[7:0] sl811_d,     //USB数据线与网络控制器的dm9k_sd[7:0]共享
+    //inout  wire[7:0] sl811_d,     //USB鏁版嵁绾夸笌缃戠粶鎺у埗鍣ㄧ殑dm9k_sd[7:0]鍏变韩
     output wire sl811_wr_n,
     output wire sl811_rd_n,
     output wire sl811_cs_n,
@@ -61,7 +61,7 @@ module thinpad_top(
     input  wire sl811_intrq,
     input  wire sl811_drq_n,
 
-    //网络控制器信号，参考 DM9000A 芯片手册
+    //缃戠粶鎺у埗鍣ㄤ俊鍙凤紝鍙傝?? DM9000A 鑺墖鎵嬪唽
     output wire dm9k_cmd,
     inout  wire[15:0] dm9k_sd,
     output wire dm9k_iow_n,
@@ -70,14 +70,14 @@ module thinpad_top(
     output wire dm9k_pwrst_n,
     input  wire dm9k_int,
 
-    //图像输出信号
-    output wire[2:0] video_red,    //红色像素，3位
-    output wire[2:0] video_green,  //绿色像素，3位
-    output wire[1:0] video_blue,   //蓝色像素，2位
-    output wire video_hsync,       //行同步（水平同步）信号
-    output wire video_vsync,       //场同步（垂直同步）信号
-    output wire video_clk,         //像素时钟输出
-    output wire video_de           //行数据有效信号，用于区分消隐区
+    //鍥惧儚杈撳嚭淇″彿
+    output wire[2:0] video_red,    //绾㈣壊鍍忕礌锛?3浣?
+    output wire[2:0] video_green,  //缁胯壊鍍忕礌锛?3浣?
+    output wire[1:0] video_blue,   //钃濊壊鍍忕礌锛?2浣?
+    output wire video_hsync,       //琛屽悓姝ワ紙姘村钩鍚屾锛変俊鍙?
+    output wire video_vsync,       //鍦哄悓姝ワ紙鍨傜洿鍚屾锛変俊鍙?
+    output wire video_clk,         //鍍忕礌鏃堕挓杈撳嚭
+    output wire video_de           //琛屾暟鎹湁鏁堜俊鍙凤紝鐢ㄤ簬鍖哄垎娑堥殣鍖?
 );
 
 wire CPUclk;
@@ -140,6 +140,20 @@ Memory memory_c(
     .MemAddress(MemAddress),
     .MemWriteData(MemWriteData),
     .MemReadData(MemReadData)
+);
+
+wire [11:0] hdata;
+assign video_red = hdata < 266 ? 3'b111 : 0; //绾㈣壊绔栨潯
+assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //缁胯壊绔栨潯
+assign video_blue = hdata >= 532 ? 2'b11 : 0; //钃濊壊绔栨潯
+assign video_clk = clk_50M;
+vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+    .clk(clk_50M), 
+    .hdata(hdata), //妯潗鏍?
+    .vdata(),      //绾靛潗鏍?
+    .hsync(video_hsync),
+    .vsync(video_vsync),
+    .data_enable(video_de)
 );
 
 endmodule

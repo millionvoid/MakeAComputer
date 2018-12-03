@@ -20,7 +20,10 @@ module vga
     output wire vsync,
     output reg [WIDTH - 1:0] hdata,
     output reg [WIDTH - 1:0] vdata,
-    output wire data_enable
+    output wire data_enable,
+    output wire[2:0] video_red,    //红色像素�?3�?
+    output wire[2:0] video_green,  //绿色像素�?3�?
+    output wire[1:0] video_blue   //蓝色像素�?2�?
 );
 
 // init
