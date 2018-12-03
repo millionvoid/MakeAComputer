@@ -23,6 +23,8 @@
 module Memory(
     input wire clk,
     input wire rst,
+    input wire run_ctrl,
+    input wire debug,
     output wire CPUclk,
     input wire[31:0] SW,
     output wire[15:0] LEDOut,
@@ -59,6 +61,8 @@ module Memory(
     output wire[3:0] ext_ram_BE
     );
 
+reg[1:0] run_state;
+
 reg ctrl;
 wire succ;
 reg[2:0] mode;
@@ -83,18 +87,40 @@ assign ext_ram_BE=BE;
 assign CPUclk = (state == 5);
 //assign LEDOut = {1'b0,mode,1'b0,state,BufferData1[7:0]};
 //assign LEDOut = BufferData1[31:16];
-assign LEDOut={CPUclk,InstAddress[14:0]};
+assign LEDOut= (SW==0) ? BufferData2[15:0]:
+               (SW==1) ? BufferData2[31:16]:
+               (SW==2) ? MemAddress[15:0]:
+               (SW==3) ? MemAddress[31:16]:
+               0;
 
 always@(posedge clk or posedge rst) begin
     if (rst == 1) begin
         state <= 0;
+        run_state <= 0;
     end else begin
         case (state)
             0:begin //pre
-                if (MemReadEN | MemWriteEN) begin
-                    state <= 1;
-                end else if (succ) begin
-                    state <= 3;
+                if (!debug) begin
+                    if (MemReadEN | MemWriteEN) begin
+                        state <= 1;
+                    end else if (succ) begin
+                        state <= 3;
+                    end
+                end else begin
+                    if (run_state==0) begin
+                        if (run_ctrl) begin
+                            run_state <= 1;
+                            if (MemReadEN | MemWriteEN) begin
+                                state <= 1;
+                            end else if (succ) begin
+                                state <= 3;
+                            end
+                        end
+                    end else if (run_state==1) begin
+                        if (!run_ctrl) begin
+                            run_state<=0;
+                        end
+                    end
                 end
             end
             1:begin //rw_start
@@ -155,16 +181,16 @@ always@(posedge clk or posedge rst) begin
                     end else begin
                         case (MemAddress[1:0])
                             0:begin
-                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[7:0]) : MemWriteData[7:0];
+                                BufferData2 <= MemReadSelect[0] ? $signed(out_data[7:0]) : out_data[7:0];
                             end
                             1:begin
-                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[15:8]) : MemWriteData[15:8];
+                                BufferData2 <= MemReadSelect[0] ? $signed(out_data[15:8]) : out_data[15:8];
                             end
                             2:begin
-                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[23:16]) : MemWriteData[23:16];
+                                BufferData2 <= MemReadSelect[0] ? $signed(out_data[23:16]) : out_data[23:16];
                             end
                             3:begin
-                                BufferData2 <= MemReadSelect[0] ? $signed(MemWriteData[31:24]) : MemWriteData[31:24];
+                                BufferData2 <= MemReadSelect[0] ? $signed(out_data[31:24]) : out_data[31:24];
                             end
                         endcase
                     end

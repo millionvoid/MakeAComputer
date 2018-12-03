@@ -91,6 +91,11 @@ wire MemWriteEN;
 wire [1:0]MemReadSelect;
 wire MemWriteSelect;
 
+wire[15:0] LED_CPU;
+wire[15:0] LED_MEM;
+
+assign leds = dip_sw[29] ? LED_MEM : LED_CPU;
+
 CPU CPU_c(
     .clk(CPUclk),
     .rst(reset_btn),
@@ -104,14 +109,38 @@ CPU CPU_c(
     .MemReadSelect(MemReadSelect),
     .MemWriteSelect(MemWriteSelect),
     
-    .SW(dip_sw),
-    .LED(leds)
+    .SW(dip_sw[7:0]),
+    .LED(LED_CPU)
 );
 
-assign dpy0[7]=CPUclk;
+SEG7_LUT debug_dpy0(.iDIG(InstAddress[3:0]), .oSEG1(dpy0));
+SEG7_LUT debug_dpy1(.iDIG(InstAddress[7:4]), .oSEG1(dpy1));
+
+reg debug;
+assign txd=debug;
+
+always@(posedge clk_50M or posedge reset_btn) begin
+    if (reset_btn) begin
+        if ((dip_sw[31:30] == 1) | (dip_sw[31:30] == 2)) begin 
+            debug <= 0;
+        end else begin
+            debug <= 1;
+        end
+    end else if (!debug) begin
+        if (dip_sw[31:30] == 1) begin
+            if (InstAddress[15:0] == dip_sw[23:8]) begin
+                debug <= 1;
+            end
+        end else if (dip_sw[31:30] == 2) begin
+        end else begin
+            debug <= 1;
+        end
+    end
+end
 
 Memory memory_c(
-    //.LEDOut(leds),
+    .LEDOut(LED_MEM),
+    .SW(dip_sw[27:24]),
 
     .uart_rdn(uart_rdn),
     .uart_wrn(uart_wrn),
@@ -133,8 +162,10 @@ Memory memory_c(
     .ext_ram_WE(ext_ram_we_n),
     .ext_ram_BE(ext_ram_be_n),
     
-    .clk(clock_btn),
+    .clk(clk_50M),
     .rst(reset_btn),
+    .run_ctrl(clock_btn),
+    .debug(debug),
     .CPUclk(CPUclk),
     
     .InstAddress(InstAddress),

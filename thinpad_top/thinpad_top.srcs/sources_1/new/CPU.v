@@ -99,8 +99,8 @@ wire[31:0] NewPC;
 
 wire PCclr;
 wire PCwriteEN;
-assign PCclr=0;
-assign PCwriteEN=1;
+//assign PCclr=0;
+//assign PCwriteEN=1;
 RegPC RegPC_c(
     .clk(clk),
     .rst(rst),
@@ -127,8 +127,8 @@ Adder32 PCAdder(
 
 wire IFIDclr;
 wire IFIDwriteEN;
-assign IFIDclr=0;
-assign IFIDwriteEN=1;
+//assign IFIDclr=0;
+//assign IFIDwriteEN=1;
 
 RegIFID RegIFID_c(
     .clk(clk),
@@ -147,6 +147,7 @@ RegIFID RegIFID_c(
 wire[31:0] IDExtendImm;
 
 Extender Extender_c(
+    .PC(IFNPC-4),
     .Instruction(IFIDInstruction),
     .ExtendImm(IDExtendImm)
 );
@@ -195,6 +196,7 @@ wire[31:0] IDRegDataB;
 wire[31:0] WBWriteData; //WriteBack
 
 RegisterFile RegisterFile_c(
+    .clk(clk),
     //input
     .ReadRegA(IDRegSrcA),
     .ReadRegB(IDRegSrcB),
@@ -244,8 +246,8 @@ HazardUnit HazardUnit_c(
 
 wire IDEXclr;
 wire IDEXwriteEN;
-assign IDEXclr=0;
-assign IDEXwriteEN=1;
+//assign IDEXclr=0;
+//assign IDEXwriteEN=1;
 
 RegIDEX RegIDEX_c(
     .clk(clk),
@@ -300,7 +302,7 @@ RegIDEX RegIDEX_c(
     .BranchTypeOutput(IDEXBranchType),
     .JumpTypeOutput(IDEXJumpType),
     .MemReadSelectOutput(IDEXMemReadSelect),
-    .MemWriteSelectOutput(IDEXMemReadSelect),
+    .MemWriteSelectOutput(IDEXMemWriteSelect),
     
     .RegWriteOutput(IDEXRegWrite),
     .MemToRegOutput(IDEXMemToReg),
@@ -464,8 +466,8 @@ assign LED= (SW==0) ? IDEXALUOp:
 
 wire EXMEMclr;
 wire EXMEMwriteEN;
-assign EXMEMclr=0;
-assign EXMEMwriteEN=1;
+//assign EXMEMclr=0;
+//assign EXMEMwriteEN=1;
 
 RegEXMEM RegEXMEM_c(
     .clk(clk),
@@ -506,18 +508,18 @@ RegEXMEM RegEXMEM_c(
 assign MemAddress=EXMEMEXResult;
 assign MemWriteData=EXMEMRegDataB;
 
-//assign MemReadEN=EXMEMMemRead;
-//assign MemWriteEN=EXMEMMemWrite;
-assign MemReadEN=0;
-assign MemWriteEN=0;
+assign MemReadEN=EXMEMMemRead;
+assign MemWriteEN=EXMEMMemWrite;
+//assign MemReadEN=0;
+//assign MemWriteEN=0;
 
 assign MemReadSelect=EXMEMMemReadSelect;
 assign MemWriteSelect=EXMEMMemWriteSelect;
 
 wire MEMWBclr;
 wire MEMWBwriteEN;
-assign MEMWBclr=0;
-assign MEMWBwriteEN=1;
+//assign MEMWBclr=0;
+//assign MEMWBwriteEN=1;
 
 RegMEMWB RegMEMWB_c(
     .clk(clk),
@@ -552,7 +554,7 @@ Selector32_2to1 WBWriteDataSelector(
 
 
 //StallUnit
-/*
+
 StallUnit StallUnit_c(
     .BranchHappen(EXBranchHappen),
     .HazardHappen(IDHazardHappen),
@@ -567,7 +569,7 @@ StallUnit StallUnit_c(
     .MEMWBWriteEN(MEMWBwriteEN),
     .MEMWBClear(MEMWBclr)
 );
-*/
+
 
 assign LED= (SW==0) ? IDALUOp:
             (SW==1) ? IDRegSrcA:
@@ -595,18 +597,24 @@ assign LED= (SW==0) ? IDALUOp:
             (SW==20) ? EXRegB[31:16]:
             (SW==21) ? EXInputB[15:0]:
             (SW==22) ? EXInputB[31:16]:
-            (SW==21) ? EXOutput[15:0]:
-            (SW==22) ? EXOutput[31:16]:
-            (SW==21) ? EXEXResult[15:0]:
-            (SW==22) ? EXEXResult[31:16]:
-            (SW==23) ? EXRegWrite:
-            (SW==24) ? EXBranchPC[15:0]:
-            (SW==25) ? EXBranchPC[31:16]:
-            (SW==26) ? {EXBranchSelect,EXBranchHappen,IDHazardHappen}:
-            (SW==27) ? NewPC[15:0]:
-            (SW==28) ? NewPC[31:16]:
-            (SW==29) ? WBWriteData[15:0]:
-            (SW==30) ? WBWriteData[31:16]:
+            (SW==23) ? EXOutput[15:0]:
+            (SW==24) ? EXOutput[31:16]:
+            (SW==25) ? EXEXResult[15:0]:
+            (SW==26) ? EXEXResult[31:16]:
+            (SW==27) ? EXRegWrite:
+            (SW==28) ? EXBranchPC[15:0]:
+            (SW==29) ? EXBranchPC[31:16]:
+            (SW==30) ? {EXBranchSelect,EXBranchHappen,IDHazardHappen}:
+            (SW==31) ? NewPC[15:0]:
+            (SW==32) ? NewPC[31:16]:
+            (SW==33) ? WBWriteData[15:0]:
+            (SW==34) ? WBWriteData[31:16]:
+            /*
+            (SW==35) ? MemReadData:
+            (SW==36) ? EXMEMMemRead:
+            (SW==37) ? EXMEMEXResult[15:0]:
+            (SW==38) ? EXMEMEXResult[31:0]:
+            */
             0;
 
 endmodule

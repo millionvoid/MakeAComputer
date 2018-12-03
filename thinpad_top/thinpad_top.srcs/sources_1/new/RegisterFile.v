@@ -58,7 +58,7 @@ always @(*)begin
     end
 end
 
-always@(posedge clk)begin
+always@(negedge clk)begin
     if(RegWrite)
         if(WriteReg[5]==0)
             if(WriteReg[4:0]==0)

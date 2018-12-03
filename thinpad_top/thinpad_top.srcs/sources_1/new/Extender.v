@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module Extender(
+	input wire[31:0]PC,
 	input wire[31:0]Instruction,
 	output reg[31:0]ExtendImm//16bit: signExtend;others:sign extend
     );
@@ -31,10 +32,18 @@ function [31:0] ZeroExtend_5to32;
 	end
 endfunction
 
-function [31:0] ZeroExtend_26to32; 
+function [31:0] Extend_26to32; 
    input wire[25:0]InImm;
+   input wire[31:0]PC;
    begin
-		ZeroExtend_26to32={6'b000000,InImm};
+		Extend_26to32={PC[31:28],InImm,2'b00};
+	end
+endfunction
+
+function [31:0] ZeroExtend_16to32; 
+   input wire[15:0]InImm;
+	begin
+		ZeroExtend_16to32={16'b0000000000000000,InImm};
 	end
 endfunction
 
@@ -50,10 +59,15 @@ function [31:0] SignExtend_16to32;
 	end
 endfunction
 
-function [31:0] ZeroExtend_16to32; 
+function [31:0] ShiftLeft2_SignExtend_16to32; 
    input wire[15:0]InImm;
 	begin
-		ZeroExtend_16to32={16'b0000000000000000,InImm};
+		if (InImm[15]==0) begin
+			ShiftLeft2_SignExtend_16to32={14'b00000000000000,InImm,2'b00};
+		end
+		else begin
+			ShiftLeft2_SignExtend_16to32={14'b11111111111111,InImm,2'b00};
+		end
 	end
 endfunction
 
@@ -65,18 +79,24 @@ always @(*) begin
 				default:ExtendImm<=0;
 			endcase
 		end
-		6'b001001:
+		6'b000100,6'b000111,6'b000101:
+		//BEQ,BGTZ,BNE
 		begin
-            ExtendImm<=ZeroExtend_16to32(Instruction[15:0]);
-        end
-		6'b001100,6'b000100,6'b000111,6'b000101,6'b100000,6'b001111,6'b100011,6'b001101,6'b101000,6'b101011,6'b001110,6'b100100:
-		//ANDI,BEQ,BGTZ,BNE,LB,LUI,LW,ORI,SB,SW,XORI,LBU
+			ExtendImm<=ShiftLeft2_SignExtend_16to32(Instruction[15:0]);
+		end
+		6'b001001,6'b100000,6'b100011,6'b101000,6'b101011,6'b100100:
+		//ADDIU,LB,LW,SB,SW,LBU
 		begin
 			ExtendImm<=SignExtend_16to32(Instruction[15:0]);
 		end
+		6'b001100,6'b001111,6'b001101,6'b001110:
+		//ANDI,LUI,ORI,XORI
+		begin
+			ExtendImm<=ZeroExtend_16to32(Instruction[15:0]);
+		end
 		6'b000010,6'b000011 ://J,JAL
 		begin
-			ExtendImm<=ZeroExtend_26to32(Instruction[25:0]);
+			ExtendImm<=Extend_26to32(Instruction[25:0],PC[31:0]);
 		end
 		default:ExtendImm<=0;
 	endcase;

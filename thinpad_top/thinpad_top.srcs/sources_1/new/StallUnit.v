@@ -52,7 +52,7 @@ always @(*) begin
 			BothBranchAndHazard=1;
 		else begin
 			IFIDClear=1;
-			IDEXClear=1;
+			//IDEXClear=1;
 		end
 	end
 	else if(HazardHappen)begin

@@ -55,8 +55,8 @@ module Ctrl_SRAM_UART(
  assign uart_rdn=rdn;
  assign uart_wrn=wrn;
  reg[31:0] data;
- assign ram_data=mode[0]?31'bz:data;
- assign ext_ram_data=mode[0]?31'bz:data;
+ assign ram_data=mode[0]?32'bz:data;
+ assign ext_ram_data=mode[0]?32'bz:data;
  assign ram_addr=in_addr;
  assign ext_ram_addr=in_addr;
  reg CE, OE, WE;
