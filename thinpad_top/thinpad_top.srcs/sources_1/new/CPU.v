@@ -524,10 +524,10 @@ StallUnit StallUnit_c(
 );
 
 
-assign LED= (SW==0) ? IDALUOp:
-            (SW==1) ? IDRegSrcA:
-            (SW==2) ? IDRegSrcB:
-            (SW==3) ? IDRegDest:
+assign LED= //(SW==0) ? IDALUOp:
+            //(SW==1) ? IDRegSrcA:
+            //(SW==2) ? IDRegSrcB:
+            //(SW==3) ? IDRegDest:
             (SW==4) ? {IDBranchType,IDJumpType}:
             (SW==5) ? {IDEXResultSelect,IDRegWrite,IDMemToReg,IDMemRead,IDMemWrite}:
             (SW==6) ? {IDALUSrc,IDIsMOVZ,IDMemWriteSelect,IDMemReadSelect}:
@@ -537,8 +537,8 @@ assign LED= (SW==0) ? IDALUOp:
             (SW==9) ? InstInput[15:0]:
             (SW==10) ? InstInput[31:16]:
             
-            (SW==11) ? IDExtendImm[15:0]:
-            (SW==12) ? IDExtendImm[31:16]:
+            //(SW==11) ? IDExtendImm[15:0]:
+            //(SW==12) ? IDExtendImm[31:16]:
             
             (SW==13) ? IDRegDataA[15:0]:
             (SW==14) ? IDRegDataA[31:16]:
@@ -550,13 +550,13 @@ assign LED= (SW==0) ? IDALUOp:
             (SW==20) ? EXRegB[31:16]:
             (SW==21) ? EXInputB[15:0]:
             (SW==22) ? EXInputB[31:16]:
-            (SW==23) ? EXOutput[15:0]:
-            (SW==24) ? EXOutput[31:16]:
+            //(SW==23) ? EXOutput[15:0]:
+            //(SW==24) ? EXOutput[31:16]:
             (SW==25) ? EXEXResult[15:0]:
             (SW==26) ? EXEXResult[31:16]:
             (SW==27) ? EXRegWrite:
-            (SW==28) ? EXBranchPC[15:0]:
-            (SW==29) ? EXBranchPC[31:16]:
+            //(SW==28) ? EXBranchPC[15:0]:
+            //(SW==29) ? EXBranchPC[31:16]:
             (SW==30) ? {EXForwardA,EXForwardB,EXBranchSelect,EXBranchHappen,IDHazardHappen}:
             (SW==31) ? NewPC[15:0]:
             (SW==32) ? NewPC[31:16]:
