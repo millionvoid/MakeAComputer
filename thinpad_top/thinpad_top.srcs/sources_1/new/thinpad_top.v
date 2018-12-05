@@ -80,6 +80,34 @@ module thinpad_top(
     output wire video_de           //行数据有效信号，用于区分消隐区
 );
 
+// PLL分频示例
+wire locked, clk_10M, clk_20M;
+pll_example clock_gen 
+ (
+  // Clock out ports
+  .clk_out1(clk_10M), // 时钟输出1，频率在IP配置界面中设置
+  .clk_out2(clk_20M), // 时钟输出2，频率在IP配置界面中设置
+  // Status and control signals
+  .reset(reset_btn), // PLL复位输入
+  .locked(locked), // 锁定输出，"1"表示时钟稳定，可作为后级电路复位
+ // Clock in ports
+  .clk_in1(clk_50M) // 外部时钟输入
+ );
+
+reg reset_of_clk10M;
+// 异步复位，同步释放
+always@(posedge clk_10M or negedge locked) begin
+    if(~locked) reset_of_clk10M <= 1'b1;
+    else        reset_of_clk10M <= 1'b0;
+end
+
+wire clock;
+wire reset;
+assign clock=clk_50M;
+assign reset=reset_btn;
+//assign clock=clk_10M;
+//assign reset=reset_of_clk10M;
+
 wire CPUclk;
 wire[31:0] InstAddress;
 wire[31:0] InstInput;
@@ -98,7 +126,7 @@ assign leds = dip_sw[29] ? LED_MEM : LED_CPU;
 
 CPU CPU_c(
     .clk(CPUclk),
-    .rst(reset_btn),
+    .rst(reset),
     .InstAddress(InstAddress),
     .InstInput(InstInput),
     .MemAddress(MemAddress),
@@ -119,8 +147,8 @@ SEG7_LUT debug_dpy1(.iDIG(InstAddress[7:4]), .oSEG1(dpy1));
 reg debug;
 assign txd=debug;
 
-always@(posedge clk_50M or posedge reset_btn) begin
-    if (reset_btn) begin
+always@(posedge clock or posedge reset) begin
+    if (reset) begin
         if ((dip_sw[31:30] == 1) | (dip_sw[31:30] == 2)) begin 
             debug <= 0;
         end else begin
@@ -138,7 +166,7 @@ always@(posedge clk_50M or posedge reset_btn) begin
     end
 end
 
-Memory memory_c(
+MemoryNew memory_c(
     .LEDOut(LED_MEM),
     .SW(dip_sw[27:24]),
 
@@ -162,8 +190,8 @@ Memory memory_c(
     .ext_ram_WE(ext_ram_we_n),
     .ext_ram_BE(ext_ram_be_n),
     
-    .clk(clk_50M),
-    .rst(reset_btn),
+    .clk(clock),
+    .rst(reset),
     .run_ctrl(clock_btn),
     .debug(debug),
     .CPUclk(CPUclk),
