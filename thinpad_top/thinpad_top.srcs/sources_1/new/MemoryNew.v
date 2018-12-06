@@ -58,8 +58,17 @@ module MemoryNew(
     output wire ext_ram_CE,
     output wire ext_ram_OE,
     output wire ext_ram_WE,
-    output wire[3:0] ext_ram_BE
+    output wire[3:0] ext_ram_BE,
+    
+    output reg[15:0] vga_addr,
+    output reg[7:0] vga_data
     );
+    
+initial begin
+    vga_addr <= 0;
+    vga_data <= 0;
+end
+    
 reg[1:0] run_state;
 
 reg[31:0] in_data;
@@ -77,7 +86,7 @@ end
 reg[31:0] BufferData1;
 reg[31:0] BufferData2;
 assign InstInput=BufferData1;
-//assign InstInput= !InstAddress[22] ? ram_data : ext_ram_data;
+//assign InstInput= InstAddress[22] ? ext_ram_data : ram_data;
 assign MemReadData=BufferData2;
 
 reg[3:0] BE;
@@ -94,7 +103,7 @@ reg[6:0] uartTimer;
 initial begin
     uartEN <= 1;
     uartTimer <= 0;
-end;
+end
 
 assign LEDOut= (SW==0) ? BufferData2[15:0]:
                (SW==1) ? BufferData2[31:16]:
@@ -256,46 +265,53 @@ always@(posedge clk or posedge rst) begin
                     uartEN <= 0;
                     uartTimer <= 20;
                 end
-                if (MemReadEN) begin
-                    case (MemAddress)
-                        32'hBFD003F8:begin
-                            rdn <= 0;
-                            state <= 2;
-                        end
-                        32'hBFD003FC:begin
-                            BufferData2 <= {30'b0,uart_dataready /*& uartEN*/,uart_tsre & uart_tbre /*& uartEN*/};
-                            state <= 3;
-                        end
-                        default:begin
-                            if (MemAddress[22]) begin
-                                OE2 <= 0;
-                            end else begin
-                                OE1 <= 0;
+                if (MemAddress[31:16] == 16'hBF41) begin
+                    if (MemWriteEN) begin
+                        vga_addr <= MemAddress[15:0] - 16'h0320;
+                        vga_data <= MemWriteData[7:0];
+                    end
+                    state <= 3;
+                end else begin
+                    if (MemReadEN) begin
+                        case (MemAddress)
+                            32'hBFD003F8:begin
+                                rdn <= 0;
+                                state <= 2;
                             end
-                            state <= 2;
-                        end
-                    endcase
-                end
-                if (MemWriteEN) begin
-                    case (MemAddress)
-                        32'hBFD003F8:begin
-                            wrn <= 0;
-                            state <= 2;
-                        end
-                        32'hBFD003FC:begin
-                            state <= 3;
-                        end
-                        default:begin
-                            if (MemAddress[22]) begin
-                                WE2 <= 0;
-                            end else begin
-                                WE1 <= 0;
+                            32'hBFD003FC:begin
+                                BufferData2 <= {30'b0,uart_dataready /*& uartEN*/,uart_tsre & uart_tbre /*& uartEN*/};
+                                state <= 3;
                             end
-                            state <= 2;
-                        end
-                    endcase
+                            default:begin
+                                if (MemAddress[22]) begin
+                                    OE2 <= 0;
+                                end else begin
+                                    OE1 <= 0;
+                                end
+                                state <= 2;
+                            end
+                        endcase
+                    end
+                    if (MemWriteEN) begin
+                        case (MemAddress)
+                            32'hBFD003F8:begin
+                                wrn <= 0;
+                                state <= 2;
+                            end
+                            32'hBFD003FC:begin
+                                state <= 3;
+                            end
+                            default:begin
+                                if (MemAddress[22]) begin
+                                    WE2 <= 0;
+                                end else begin
+                                    WE1 <= 0;
+                                end
+                                state <= 2;
+                            end
+                        endcase
+                    end
                 end
-                
             end
             2:begin //rw_get
                 OE1<=1; WE1<=1;
@@ -331,7 +347,9 @@ always@(posedge clk or posedge rst) begin
                     OE1 <= 0;
                 end
                 state <= 4;
+                //state <= 0;
             end
+            
             4:begin //ins_wait
                 if (InstAddress[22]) begin
                     BufferData1 <= ext_ram_data;
@@ -340,6 +358,7 @@ always@(posedge clk or posedge rst) begin
                 end
                 state <= 0;
             end
+            
             default:begin
                 state <= 0;
             end

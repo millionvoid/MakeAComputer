@@ -166,6 +166,9 @@ always@(posedge clock or posedge reset) begin
     end
 end
 
+wire[15:0] vga_addr;
+wire[7:0] vga_data;
+
 MemoryNew memory_c(
     .LEDOut(LED_MEM),
     .SW(dip_sw[27:24]),
@@ -205,7 +208,57 @@ MemoryNew memory_c(
     .MemWriteSelect(MemWriteSelect),
     .MemAddress(MemAddress),
     .MemWriteData(MemWriteData),
-    .MemReadData(MemReadData)
+    .MemReadData(MemReadData),
+    
+    .vga_addr(vga_addr),
+    .vga_data(vga_data)
 );
+
+wire[7:0] view_row;
+wire[6:0] view_col;
+wire[3:0] view_char;
+
+VGAAdapter VGAAdapter_c(
+    .clk(clock),
+    .rst(reset),
+    .addr(vga_addr),
+    .in_char(vga_data),
+    
+    .row(view_row),
+    .col(view_col),
+    .out_char(view_char)
+);
+
+assign video_clk=clk_50M;
+vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+    .clk(clk_50M),
+    
+    .hsync(video_hsync),
+    .vsync(video_vsync),
+    .data_enable(video_de),
+    .r(video_red),
+    .g(video_green),
+    .b(video_blue),
+    
+    .char_row(view_row),
+    .char_col(view_col),
+    .char_num(view_char)
+);
+
+/*
+wire [11:0] hdata;
+assign video_red = hdata < 266 ? 3'b111 : 0; //红色竖条
+assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //绿色竖条
+assign video_blue = hdata >= 532 ? 2'b11 : 0; //蓝色竖条
+assign video_clk = clk_50M;
+vga_origin #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+    .clk(clk_50M), 
+    .hdata(hdata), //横坐标
+    .vdata(),      //纵坐标
+    .hsync(video_hsync),
+    .vsync(video_vsync),
+    .data_enable(video_de)
+);
+*/
 
 endmodule
